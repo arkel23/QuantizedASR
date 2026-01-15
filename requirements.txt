@@ -21,11 +21,14 @@ pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.
 # pip3 install transformers datasets[audio]==3.6.0 evaluate tqdm pyyaml wandb==0.23.0 jiwer==3.1.0
 
 # required for voxtral
+# needed if compiling on glibc < 2.28
+# pip3 install tiktoken==0.11.0
 # pip3 install "mistral-common[audio,hf-hub]"
-# pip3 install accelerate
+
 
 # others
 # pip3 install jiwer==3.1.0 soundfile
+# pip3 install accelerate
 
 
 # torch>=2.1
