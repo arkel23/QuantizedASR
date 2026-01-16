@@ -11,8 +11,12 @@ def parse_args():
                          help='Max num of tokens to generate')
     parser.add_argument('--model_dtype', type=str, default='bfloat16')
 
+    parser.add_argument('--quant_config', type=str, default=None,
+                        choices=['bnb'])
+    parser.add_argument('--quant_dtype_weights', type=str, default=None)
+
     parser.add_argument('--dataset_path', type=str, default='hf-audio/esb-datasets-test-only-sorted')
-    parser.add_argument('--dataset', type=str, default='ami')
+    parser.add_argument('--dataset', type=str, default='voxpopuli')
     parser.add_argument('--split', type=str, default='test')
     parser.add_argument('--data_dtype', type=str, default='bfloat16')
 

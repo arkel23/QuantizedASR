@@ -7,6 +7,7 @@ from transformers import (
     AutoProcessor,
     MODEL_FOR_SPEECH_SEQ_2_SEQ_MAPPING,
     VoxtralForConditionalGeneration,
+    BitsAndBytesConfig,
 )
 
 # ================================
@@ -34,6 +35,12 @@ def load_model_and_processor(args):
     # else:
     #     model_dtype = 'auto'
 
+    quantization_config=None
+    if args.quant_config == 'bnb' and args.quant_dtype_weights == '8bit':
+        quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+    elif args.quant_config == 'bnb' and args.quant_dtype_weights == '4bit':
+        quantization_config = BitsAndBytesConfig(load_in_4bit=True)
+
     # https://huggingface.co/docs/transformers/main/en/main_classes/model#transformers.PreTrainedModel.from_pretrained
     model = cls.from_pretrained(
         args.model_id,
@@ -44,11 +51,13 @@ def load_model_and_processor(args):
         attn_implementation='sdpa',
         # for large models that need to be split
         # device map can be cpu, cuda:1
-        # device_map='auto',
+        device_map='auto',
         # tp_plan='auto',
         # a dic to be used with bitsandbytes or gptq
         # quantization_config=QUantizationConfigMixin, Dict
-    ).to(args.device)
+        quantization_config=quantization_config,
+    )
+    # model = model.to(args.device)
     # to use device_map='auto' need to install accelerate
     # .to(args.device)
 
