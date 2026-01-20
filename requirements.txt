@@ -25,10 +25,12 @@ pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.
 # pip3 install tiktoken==0.11.0
 # pip3 install "mistral-common[audio,hf-hub]"
 
+# others (i think its auto-installed when installing mistral-common[audio])
+# pip3 install soundfile
 
-# others
-# pip3 install jiwer==3.1.0 soundfile
+# when using quantization (and in general if using auto device_map)
 # pip3 install accelerate
+# pip3 install bitsandbytes
 
 
 # torch>=2.1

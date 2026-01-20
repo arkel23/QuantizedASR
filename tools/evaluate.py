@@ -7,11 +7,17 @@ from qasr.data.data_utils import load_and_prepare_dataset
 from qasr.eval.eval_utils import make_benchmark_fn, run_warmup, evaluate_dataset, compute_and_log_metrics
 
 
-torch.set_float32_matmul_precision('high')
+def init_procedure(args):
+    torch.cuda.reset_peak_memory_stats()
+    if getattr(args, 'float32_matmul_prec', None):
+        torch.set_float32_matmul_precision(args.float32_matmul_prec)
+    return 0
 
 
 def main():
     args = parse_args()
+
+    init_procedure()
 
     model, processor, model_input_name, gen_kwargs = load_model_and_processor(args)
 

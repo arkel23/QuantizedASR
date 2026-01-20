@@ -10,9 +10,37 @@ from transformers import (
     BitsAndBytesConfig,
 )
 
-# ================================
-# Model & Processor
-# ================================
+
+def get_dtype_quantization_config(args):
+    # default is torch.float (fp32), others: torch.float16/bfloat16
+    model_dtype = getattr(torch, args.model_dtype, 'auto')
+    # if args.model_dtype == 'bfloat16':
+    #     model_dtype = torch.bfloat16
+    # elif args.model_dtype == 'float16':
+    #     model_dtype = torch.float16
+    # elif args.model_dtype == 'float32':
+    #     model_dtype = torch.float
+    # else:
+    #     model_dtype = 'auto'
+
+    act_dtype = getattr(torch, args.act_dtype, torch.float32)
+
+    quantization_config=None
+    if args.quant_config == 'bnb' and args.quant_dtype_weights == '8bit':
+        quantization_config = BitsAndBytesConfig(
+            load_in_8bit=True,
+            llm_int8_threshold=getattr(args, 'bnb_int8_threshold', 6.0),
+        )
+    elif args.quant_config == 'bnb' and args.quant_dtype_weights == '4bit':
+        quantization_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=act_dtype,
+            bnb_4bit_use_double_quant=getattr(args, 'bnb_4bit_use_double_quant', False),
+            bnb_4bit_quant_type=getattr(args, 'bnb_4bit_quant_type', 'fp4'), # can be fp4 or nf4
+        )
+
+    return model_dtype, quantization_config
+
 
 def load_model_and_processor(args):
     config = AutoConfig.from_pretrained(args.model_id)
@@ -23,29 +51,13 @@ def load_model_and_processor(args):
         cls = AutoModelForSpeechSeq2Seq
     else:
         cls = AutoModelForCTC
-    # cls = AutoModelForSpeechSeq2Seq if type(config) in MODEL_FOR_SPEECH_SEQ_2_SEQ_MAPPING else AutoModelForCTC
 
-    dtype = getattr(torch, args.model_dtype, 'auto')
-    # if args.model_dtype == 'bfloat16':
-    #     model_dtype = torch.bfloat16
-    # elif args.model_dtype == 'float16':
-    #     model_dtype = torch.float16
-    # elif args.model_dtype == 'float32':
-    #     model_dtype = torch.float
-    # else:
-    #     model_dtype = 'auto'
-
-    quantization_config=None
-    if args.quant_config == 'bnb' and args.quant_dtype_weights == '8bit':
-        quantization_config = BitsAndBytesConfig(load_in_8bit=True)
-    elif args.quant_config == 'bnb' and args.quant_dtype_weights == '4bit':
-        quantization_config = BitsAndBytesConfig(load_in_4bit=True)
+    model_dtype, quantization_config = get_dtype_quantization_config(args)
 
     # https://huggingface.co/docs/transformers/main/en/main_classes/model#transformers.PreTrainedModel.from_pretrained
     model = cls.from_pretrained(
         args.model_id,
-        # default is torch.float (fp32), others: torch.float16/bfloat16
-        torch_dtype=dtype,
+        torch_dtype=model_dtype, # also known as dtype in transformers > 5
         # https://huggingface.co/docs/transformers/en/attention_interface
         # sdpa uses pytorch default, can autotune with context manager
         attn_implementation='sdpa',
@@ -54,20 +66,14 @@ def load_model_and_processor(args):
         device_map='auto',
         # tp_plan='auto',
         # a dic to be used with bitsandbytes or gptq
-        # quantization_config=QUantizationConfigMixin, Dict
         quantization_config=quantization_config,
     )
-    # model = model.to(args.device)
-    # to use device_map='auto' need to install accelerate
-    # .to(args.device)
 
     processor = AutoProcessor.from_pretrained(args.model_id)
     model_input_name = processor.model_input_names[0]
 
     gen_kwargs = None
     if model.can_generate():
-        # gen_kwargs = {'max_new_tokens': args.max_new_tokens}
-
         # Set generation parameters
         gen_kwargs = {
             'max_new_tokens': args.max_new_tokens,

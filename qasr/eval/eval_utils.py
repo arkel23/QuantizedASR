@@ -13,6 +13,10 @@ from torch.nn.attention import sdpa_kernel, SDPBackend
 from qasr.data.data_utils import preprocess_batch, postprocess_predictions
 
 
+def count_params(model):
+    return sum([p.numel() for p in model.parameters()])
+
+
 def read_manifest(manifest_path: str):
     '''
     Reads a manifest file (jsonl format) and returns a list of dictionaries containing samples.
@@ -222,25 +226,31 @@ def score_results(directory: str, model_id: str = None):
 # ================================
 
 def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
-    if model.can_generate():
-        # 2.1 Auto-regressive generation for encoder-decoder models
-        return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
-    else:
-        # 2.2. Single forward pass for CTC
+    dtype = getattr(torch, args.act_dtype, None)
+
+    if args.flash_attn:
         with torch.no_grad():
-            logits = model(**inputs).logits
-            return logits.argmax(-1)
+            with torch.autocast(device_type=model.device.type, dtype=dtype):
+                with sdpa_kernel(SDPBackend.MATH if args.torch_compile else SDPBackend.FLASH_ATTENTION):
+                    if model.can_generate():
+                        # 2.1 Auto-regressive generation for encoder-decoder models
+                        return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
+                    else:
+                        # 2.2. Single forward pass for CTC
+                        with torch.no_grad():
+                            logits = model(**inputs).logits
+                            return logits.argmax(-1)
 
-    # with sdpa_kernel(SDPBackend.MATH if args.torch_compile else SDPBackend.FLASH_ATTENTION):
-    #     if model.can_generate():
-    #         # 2.1 Auto-regressive generation for encoder-decoder models
-    #         return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
-    #     else:
-    #         # 2.2. Single forward pass for CTC
-    #         with torch.no_grad():
-    #             logits = model(**inputs).logits
-    #             return logits.argmax(-1)
-
+    with torch.no_grad():
+        with torch.autocast(device_type=model.device.type, dtype=dtype):
+            if model.can_generate():
+                # 2.1 Auto-regressive generation for encoder-decoder models
+                return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
+            else:
+                # 2.2. Single forward pass for CTC
+                with torch.no_grad():
+                    logits = model(**inputs).logits
+                    return logits.argmax(-1)
 
 
 # ================================
@@ -321,11 +331,7 @@ def evaluate_dataset(dataset, benchmark, args):
     return results
 
 
-# ================================
-# Metrics & Logging
-# ================================
-
-def compute_and_log_metrics(results, args):
+def compute_and_log_metrics(results, model, args):
     manifest_path = write_manifest(
         results['references'],
         results['predictions'],
@@ -346,8 +352,20 @@ def compute_and_log_metrics(results, args):
         sum(results['audio_length_s']) / sum(results['transcription_time_s']), 2
     )
 
+    no_params = round(count_params(model) / 1e6, 4)
+
+    if torch.cuda.is_available():
+        max_memory = round(torch.cuda.max_memory_reserved() / (1024 ** 2), 4)
+    else:
+        max_memory = 0
+
     print('Results saved at path:', os.path.abspath(manifest_path))
     print('WER:', wer, '%  RTFx:', rtfx)
-    wandb.log({'wer': wer, 'rtfx': rtfx})
+
+    wandb.log({
+        'wer': wer, 'rtfx': rtfx,
+        'max_memory': max_memory,
+        'no_params': no_params
+    })
 
     return 0

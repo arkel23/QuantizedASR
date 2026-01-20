@@ -119,20 +119,10 @@ def preprocess_batch(batch, processor, model, model_input_name, args):
             device=args.device,
         )
 
-    dtype = getattr(torch, args.data_dtype, torch.float)
-    # if args.model_dtype == 'bfloat16':
-    #     dtype = torch.bfloat16
-    # elif args.model_dtype == 'float16':
-    #     dtype = torch.float16
-    # # elif args.model_dtype == 'float32':
-    # else:
-    #     # dtype = 'auto'
-    #     dtype = torch.float
+    dtype = getattr(torch, args.data_dtype, torch.float32)
 
     inputs = inputs.to(args.device)
     inputs[model_input_name] = inputs[model_input_name].to(dtype)
-    # from voxtral code
-    # inputs = inputs.to(device, dtype=torch.bfloat16)
 
     return inputs, padding_size, minibatch_size
 
