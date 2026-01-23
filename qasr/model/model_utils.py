@@ -2,6 +2,7 @@ import torch
 
 from transformers import (
     AutoConfig,
+    AutoModel,
     AutoModelForSpeechSeq2Seq,
     AutoModelForCTC,
     AutoProcessor,
@@ -11,9 +12,49 @@ from transformers import (
 )
 
 
+def add_transcription_prompt_to_processor(processor, model_id):
+    if 'granite' in model_id:
+        # create text prompt
+        chat = [
+            {
+                "role": "system",
+                "content": "Knowledge Cutoff Date: April 2024.\nToday's Date: December 19, 2024.\nYou are Granite, developed by IBM. You are a helpful AI assistant",
+            },
+            {
+                "role": "user",
+                "content": "<|audio|>can you transcribe the speech into a written format?",
+            }
+        ]
+
+        text = processor.apply_chat_template(
+                chat, tokenize=False, add_generation_prompt=True
+        )
+
+        processor.prompt_asr = text
+
+    # THIS DOES NOT MAKE ANY DIFFERENCE IN WER
+    # elif 'lite-whisper' in model_id:
+    #     processor.tokenizer.set_prefix_tokens(language='english', task='transcribe')
+
+    return processor
+
+
+def prepare_processor(args):
+    if 'lite-whisper' in args.model_id:
+        # id = 'openai/whisper-large-v3-turbo' if 'turbo' in args.model_id else 'openai/whisper-large-v3'
+        processor = AutoProcessor.from_pretrained('openai/whisper-large-v3-turbo', trust_remote_code=True)
+    else:
+        processor = AutoProcessor.from_pretrained(args.model_id, trust_remote_code=True)
+    processor = add_transcription_prompt_to_processor(processor, args.model_id)
+    return processor
+
+
 def get_dtype_quantization_config(args):
     # default is torch.float (fp32), others: torch.float16/bfloat16
-    model_dtype = getattr(torch, args.model_dtype, 'auto')
+    # model_dtype = getattr(args, 'model_dtype', 'auto')
+    # if 'model_dtype' in ['bfloat16', 'float16', 'float32']:
+    #     model_dtype = getattr(torch, model_dtype, torch.float32)
+    model_dtype = getattr(torch, args.model_dtype, 'auto') if getattr(args, 'model_dtype', None) else 'auto'
     # if args.model_dtype == 'bfloat16':
     #     model_dtype = torch.bfloat16
     # elif args.model_dtype == 'float16':
@@ -23,7 +64,7 @@ def get_dtype_quantization_config(args):
     # else:
     #     model_dtype = 'auto'
 
-    act_dtype = getattr(torch, args.act_dtype, torch.float32)
+    act_dtype = getattr(torch, args.act_dtype, None) if getattr(args, 'act_dtype', None) else torch.float32
 
     quantization_config=None
     if args.quant_config == 'bnb' and args.quant_dtype_weights == '8bit':
@@ -43,34 +84,46 @@ def get_dtype_quantization_config(args):
 
 
 def load_model_and_processor(args):
-    config = AutoConfig.from_pretrained(args.model_id)
+    config = AutoConfig.from_pretrained(args.model_id, trust_remote_code=True)
+
+    model_dtype, quantization_config = get_dtype_quantization_config(args)
 
     if 'Voxtral' in args.model_id:
         cls = VoxtralForConditionalGeneration
+    elif 'lite-whisper' in args.model_id:
+        cls = AutoModel
     elif type(config) in MODEL_FOR_SPEECH_SEQ_2_SEQ_MAPPING:
         cls = AutoModelForSpeechSeq2Seq
     else:
         cls = AutoModelForCTC
 
-    model_dtype, quantization_config = get_dtype_quantization_config(args)
+    if 'granite' in args.model_id:
+        model = cls.from_pretrained(
+            args.model_id,
+            torch_dtype=model_dtype, # also known as dtype in transformers > 5
+            device_map='auto',
+            quantization_config=quantization_config,
+        )
+    else:
+        # https://huggingface.co/docs/transformers/main/en/main_classes/model#transformers.PreTrainedModel.from_pretrained
+        model = cls.from_pretrained(
+            args.model_id,
+            torch_dtype=model_dtype, # also known as dtype in transformers > 5
+            # https://huggingface.co/docs/transformers/en/attention_interface
+            # sdpa uses pytorch default, can autotune with context manager
+            attn_implementation='sdpa',
+            # for large models that need to be split
+            # device map can be cpu, cuda:1
+            device_map='auto',
+            # tp_plan='auto',
+            # a dic to be used with bitsandbytes or gptq
+            quantization_config=quantization_config,
+            trust_remote_code=True,
+        )
 
-    # https://huggingface.co/docs/transformers/main/en/main_classes/model#transformers.PreTrainedModel.from_pretrained
-    model = cls.from_pretrained(
-        args.model_id,
-        torch_dtype=model_dtype, # also known as dtype in transformers > 5
-        # https://huggingface.co/docs/transformers/en/attention_interface
-        # sdpa uses pytorch default, can autotune with context manager
-        attn_implementation='sdpa',
-        # for large models that need to be split
-        # device map can be cpu, cuda:1
-        device_map='auto',
-        # tp_plan='auto',
-        # a dic to be used with bitsandbytes or gptq
-        quantization_config=quantization_config,
-    )
-
-    processor = AutoProcessor.from_pretrained(args.model_id)
+    processor = prepare_processor(args)
     model_input_name = processor.model_input_names[0]
+
 
     gen_kwargs = None
     if model.can_generate():
@@ -81,13 +134,28 @@ def load_model_and_processor(args):
             'num_beams': 1,  # Greedy search
         }
 
+        if 'granite' in args.model_id:
+            gen_kwargs.update({
+                'bos_token_id': processor.tokenizer.bos_token_id,
+                'pad_token_id': processor.tokenizer.pad_token_id,
+                'eos_token_id': processor.tokenizer.eos_token_id,
+                # 'repetition_penalty': 1.0, 1.0 means no penalty
+            })
+
         # for multilingual Whisper-checkpoints we see a definitive WER boost by setting the language and task args
         if getattr(model.generation_config, 'is_multilingual', False):
             gen_kwargs['language'] = 'en'
             gen_kwargs['task'] = 'transcribe'
 
-    elif args.max_new_tokens:
-        raise ValueError('max_new_tokens is only valid for seq2seq models')
+        # if 'lite-whisper' in args.model_id:
+        #     forced_decoder_ids = processor.get_decoder_prompt_ids(
+        #         language="english", task="transcribe",
+        #     )
+        #     print(forced_decoder_ids)
+        #     gen_kwargs['decoder_input_ids'] = forced_decoder_ids
+
+    # elif args.max_new_tokens:
+    #     raise ValueError('max_new_tokens is only valid for seq2seq models')
 
     if args.torch_compile:
         model.forward = torch.compile(model.forward, mode=args.compile_mode, fullgraph=True)

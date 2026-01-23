@@ -9,8 +9,8 @@ def parse_args():
     parser.add_argument('--model_id', type=str, default='openai/whisper-tiny.en')
     parser.add_argument('--max_new_tokens', type=int, default=None,
                          help='Max num of tokens to generate')
-    parser.add_argument('--model_dtype', type=str, default='bfloat16',
-                        choices=['bfloat16', 'float16', 'float32'])
+    parser.add_argument('--model_dtype', type=str, default='float32',
+                        choices=['auto', 'bfloat16', 'float16', 'float32'])
 
     parser.add_argument('--quant_config', type=str, default=None,
                         choices=['bnb'])
@@ -25,7 +25,7 @@ def parse_args():
     parser.add_argument('--dataset_path', type=str, default='hf-audio/esb-datasets-test-only-sorted')
     parser.add_argument('--dataset', type=str, default='voxpopuli')
     parser.add_argument('--split', type=str, default='test')
-    parser.add_argument('--data_dtype', type=str, default='bfloat16',
+    parser.add_argument('--data_dtype', type=str, default='float32',
                          choices=['bfloat16', 'float16', 'float32'])
 
     parser.add_argument('--batch_size', type=int, default=64)

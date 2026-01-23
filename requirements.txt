@@ -32,6 +32,9 @@ pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.
 # pip3 install accelerate
 # pip3 install bitsandbytes
 
+# when using granite need
+# pip3 install torchaudio peft
+
 
 # torch>=2.1
 # transformers>=4.36

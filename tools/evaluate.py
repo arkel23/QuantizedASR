@@ -17,7 +17,7 @@ def init_procedure(args):
 def main():
     args = parse_args()
 
-    init_procedure()
+    init_procedure(args)
 
     model, processor, model_input_name, gen_kwargs = load_model_and_processor(args)
 
@@ -40,7 +40,7 @@ def main():
             dataset = dataset.select(range(min(args.max_eval_samples, len(dataset))))
 
     results = evaluate_dataset(dataset, benchmark, args)
-    compute_and_log_metrics(results, args)
+    compute_and_log_metrics(results, model, args)
 
     wandb.finish()
     return 0

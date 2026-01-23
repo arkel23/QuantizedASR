@@ -226,7 +226,7 @@ def score_results(directory: str, model_id: str = None):
 # ================================
 
 def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
-    dtype = getattr(torch, args.act_dtype, None)
+    dtype = getattr(torch, args.act_dtype, None) if getattr(args, 'act_dtype', None) else torch.float32
 
     if args.flash_attn:
         with torch.no_grad():
@@ -245,7 +245,25 @@ def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
         with torch.autocast(device_type=model.device.type, dtype=dtype):
             if model.can_generate():
                 # 2.1 Auto-regressive generation for encoder-decoder models
-                return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
+                # if 'lite-whisper' in args.model_id:
+                #     return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens, language='english', task='transcribe')
+
+                # from moonshine/run_eval.py
+                # Create a mask for output tokens to limit length based on input audio clip length.
+                # Add 2 to token limits to account for <sot> and <eot>.
+                # token_generation_limits = [len(clip) * 6.5 // 16000 + 2 for clip in audios]
+                # max_new_tokens = torch.tensor(token_generation_limits).reshape((-1, 1)).to(args.device)
+
+                pred_ids = model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
+
+                # output_mask = torch.arange(pred_ids.shape[-1]).repeat((pred_ids.shape[0], 1)).to(args.device)
+                # output_mask = output_mask > max_new_tokens
+
+                # eot_token = model.config.eos_token_id
+                # pred_ids.masked_fill(output_mask, eot_token)
+
+                return pred_ids
+
             else:
                 # 2.2. Single forward pass for CTC
                 with torch.no_grad():

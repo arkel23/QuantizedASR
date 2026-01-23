@@ -1,6 +1,6 @@
 import torch
 from datasets import load_dataset, Audio
-from transformers.models.voxtral.processing_voxtral import VoxtralProcessor
+from transformers import VoxtralProcessor, GraniteSpeechProcessor
 
 from .normalizer import EnglishTextNormalizer, BasicMultilingualTextNormalizer
 
@@ -59,7 +59,7 @@ def load_data(args):
 
 def prepare_data(dataset):
     # Re-sample to 16kHz and normalise transcriptions
-    dataset = dataset.cast_column('audio', Audio(sampling_rate=16000))
+    dataset = dataset.cast_column('audio', Audio(sampling_rate=16_000))
 
     normalizer = make_normalizer()
     normalize = make_normalize_fn(normalizer)
@@ -100,6 +100,20 @@ def preprocess_batch(batch, processor, model, model_input_name, args):
             format=["WAV"] * len(audios),  # Voxtral needs to know what kind of inputs
             # device=args.device,
         )
+    elif 'granite' in args.model_id:
+        inputs = processor(
+            [processor.prompt_asr] * len(audios),
+            audios,
+            return_tensors='pt',
+            device=args.device,
+        )
+    elif 'moonshine' in args.model_id:
+        inputs = processor(
+            audios,
+            sampling_rate=16_000,
+            return_tensors='pt',
+            padding=True,
+        )
     elif not model.can_generate():
         # 1.2 Either CTC pre-processing (normalize to mean 0, std 1), or long-form Whisper processing
         inputs = processor(
@@ -119,7 +133,7 @@ def preprocess_batch(batch, processor, model, model_input_name, args):
             device=args.device,
         )
 
-    dtype = getattr(torch, args.data_dtype, torch.float32)
+    dtype = getattr(torch, args.data_dtype, None) if getattr(args, 'data_dtype', None) else torch.float32
 
     inputs = inputs.to(args.device)
     inputs[model_input_name] = inputs[model_input_name].to(dtype)
@@ -138,13 +152,23 @@ def postprocess_predictions(pred_ids, padding_size, inputs, processor, normalize
 
     # 3.2 Convert token ids to text transcription
 
-    if type(processor) == VoxtralProcessor:
+    if type(processor) in [VoxtralProcessor, GraniteSpeechProcessor]:
+    # if type(processor) in [VoxtralProcessor]:
         # Decode predictions - skip the prompt tokens
         # Voxtral includes prompt tokens in output, so we slice from input_ids length
         texts = processor.batch_decode(
-            pred_ids[:, inputs.input_ids.shape[1]:], 
+            pred_ids[:, inputs.input_ids.shape[1]:],
+            # add_special_tokens=False,
             skip_special_tokens=True
         )
+    # elif type(processor) in [GraniteSpeechProcessor]:
+    #     # Decode predictions - skip the prompt tokens
+    #     # Voxtral includes prompt tokens in output, so we slice from input_ids length
+    #     texts = processor.batch_decode(
+    #         pred_ids[:, inputs.input_ids.shape[1]:],
+    #         add_special_tokens=False,
+    #         skip_special_tokens=True
+    #     )
 
     else:
         texts = processor.batch_decode(pred_ids, skip_special_tokens=True)

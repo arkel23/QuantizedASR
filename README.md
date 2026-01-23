@@ -30,7 +30,24 @@ distil-whisper/distil-large-v2
 distil-whisper/distil-large-v3
 mistralai/Voxtral-Mini-3B-2507
 mistralai/Voxtral-Small-24B-2507
+# update 01/23
+ibm-granite/granite-speech-3.3-2b
+ibm-granite/granite-speech-3.3-8b
+nyrahealth/CrisperWhisper
+
+# partial reproduction (acc lower)
+efficient-speech/lite-whisper-large-v3-acc
+efficient-speech/lite-whisper-large-v3
+efficient-speech/lite-whisper-large-v3-fast
+efficient-speech/lite-whisper-large-v3-turbo-acc
+efficient-speech/lite-whisper-large-v3-turbo
+efficient-speech/lite-whisper-large-v3-turbo-fast
+usefulsensors/moonshine-base
+usefulsensors/moonshine-tiny
+
 ```
+
+Autoregressive LALMs such as Voxtral or Granite require adjusting max_new_tokens to at least 200 (number used by Granite in paper)
 
 # Qualitative Evaluation
 
