@@ -11,6 +11,7 @@ def parse_args():
                          help='Max num of tokens to generate')
     parser.add_argument('--model_dtype', type=str, default='float32',
                         choices=['auto', 'bfloat16', 'float16', 'float32'])
+    parser.add_argument('--force_asr_language', type=str, default=None)
 
     parser.add_argument('--quant_config', type=str, default=None,
                         choices=['bnb'])

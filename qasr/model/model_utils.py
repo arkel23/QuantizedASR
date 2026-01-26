@@ -6,11 +6,19 @@ from transformers import (
     AutoModelForSpeechSeq2Seq,
     AutoModelForCTC,
     AutoProcessor,
+    Qwen2_5OmniProcessor,
     MODEL_FOR_SPEECH_SEQ_2_SEQ_MAPPING,
     VoxtralForConditionalGeneration,
+    Qwen2AudioForConditionalGeneration,
+    Qwen2_5OmniForConditionalGeneration,
     GenerationConfig,
     BitsAndBytesConfig,
 )
+
+try:
+    from transformers import AudioFlamingo3ForConditionalGeneration
+except:
+    print('HF transformers>5 can use AudioFlamingo3')
 
 
 def add_transcription_prompt_to_processor(processor, model_id):
@@ -32,6 +40,25 @@ def add_transcription_prompt_to_processor(processor, model_id):
         )
 
         processor.prompt_asr = text
+    elif 'Qwen2-Audio' in model_id:
+        prompt = "<|audio_bos|><|AUDIO|><|audio_eos|>Generate the caption in English:"
+        processor.prompt_asr = prompt
+
+    elif 'Qwen2.5-Omni' in model_id:
+        prompt = "Transcribe the English audio into text without any punctuation marks."
+        system_prompt='You are a speech recognition model.'
+        messages = [
+            {"role": "system", "content": [{"type": "text", "text": system_prompt}]},
+            {"role": "user", "content": [
+                    {"type": "audio", "audio": "audio_to_transcribe.wav"},
+                    {"type": "text", "text": prompt},
+                ]
+            },
+        ]
+
+        text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+        processor.prompt_asr = text
 
     # THIS DOES NOT MAKE ANY DIFFERENCE IN WER
     # elif 'lite-whisper' in model_id:
@@ -44,6 +71,8 @@ def prepare_processor(args):
     if 'lite-whisper' in args.model_id:
         # id = 'openai/whisper-large-v3-turbo' if 'turbo' in args.model_id else 'openai/whisper-large-v3'
         processor = AutoProcessor.from_pretrained('openai/whisper-large-v3-turbo', trust_remote_code=True)
+    elif 'Qwen2':
+        processor = Qwen2_5OmniProcessor.from_pretrained(args.model_id)
     else:
         processor = AutoProcessor.from_pretrained(args.model_id, trust_remote_code=True)
     processor = add_transcription_prompt_to_processor(processor, args.model_id)
@@ -91,6 +120,12 @@ def load_model_and_processor(args):
 
     if 'Voxtral' in args.model_id:
         cls = VoxtralForConditionalGeneration
+    elif 'Qwen2.5-Omni' in args.model_id:
+        cls = Qwen2_5OmniForConditionalGeneration
+    elif 'Qwen2-Audio' in args.model_id:
+        cls = Qwen2AudioForConditionalGeneration
+    elif 'audio-flamingo' in args.model_id:
+        cls = AudioFlamingo3ForConditionalGeneration
     elif 'lite-whisper' in args.model_id:
         cls = AutoModel
     elif type(config) in MODEL_FOR_SPEECH_SEQ_2_SEQ_MAPPING:
@@ -125,7 +160,6 @@ def load_model_and_processor(args):
     processor = prepare_processor(args)
     model_input_name = processor.model_input_names[0]
 
-
     gen_kwargs = None
     if model.can_generate():
         # Set generation parameters
@@ -143,6 +177,11 @@ def load_model_and_processor(args):
                 # 'repetition_penalty': 1.0, 1.0 means no penalty
             })
 
+        if args.force_asr_language:
+            gen_kwargs['language'] = args.force_asr_language
+            gen_kwargs['task'] = 'transcribe'
+            gen_kwargs['generation_config'] = GenerationConfig.from_pretrained(args.model_id)
+
         # for multilingual Whisper-checkpoints we see a definitive WER boost by setting the language and task args
         if getattr(model.generation_config, 'is_multilingual', False):
             gen_kwargs['language'] = 'en'
@@ -159,6 +198,7 @@ def load_model_and_processor(args):
             # forced_decoder_ids = torch.tensor([[token_id for _, token_id in forced_decoder_ids]]).to(model.device)
             # print(forced_decoder_ids)
             # gen_kwargs['decoder_start_token_id'] = forced_decoder_ids
+
 
     # elif args.max_new_tokens:
     #     raise ValueError('max_new_tokens is only valid for seq2seq models')

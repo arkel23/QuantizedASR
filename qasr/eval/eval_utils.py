@@ -266,6 +266,14 @@ def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
 
                     return pred_ids
 
+                elif 'Qwen2.5-Omni' in args.model_id:
+                    pred_ids = model.generate(
+                        **inputs, **gen_kwargs, return_audio=False,
+                        thinker_max_new_tokens=256, thinker_do_sample=False
+                    )
+                elif 'phi4' in args.model_id:
+                    raise NotImplementedError
+
                 # pred_ids = model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
 
                 return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
