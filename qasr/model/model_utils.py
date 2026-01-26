@@ -71,7 +71,7 @@ def prepare_processor(args):
     if 'lite-whisper' in args.model_id:
         # id = 'openai/whisper-large-v3-turbo' if 'turbo' in args.model_id else 'openai/whisper-large-v3'
         processor = AutoProcessor.from_pretrained('openai/whisper-large-v3-turbo', trust_remote_code=True)
-    elif 'Qwen2':
+    elif 'Qwen2' in args.model_id:
         processor = Qwen2_5OmniProcessor.from_pretrained(args.model_id)
     else:
         processor = AutoProcessor.from_pretrained(args.model_id, trust_remote_code=True)
