@@ -8,6 +8,7 @@ from transformers import (
     AutoProcessor,
     MODEL_FOR_SPEECH_SEQ_2_SEQ_MAPPING,
     VoxtralForConditionalGeneration,
+    GenerationConfig,
     BitsAndBytesConfig,
 )
 
@@ -147,12 +148,17 @@ def load_model_and_processor(args):
             gen_kwargs['language'] = 'en'
             gen_kwargs['task'] = 'transcribe'
 
-        # if 'lite-whisper' in args.model_id:
-        #     forced_decoder_ids = processor.get_decoder_prompt_ids(
-        #         language="english", task="transcribe",
-        #     )
-        #     print(forced_decoder_ids)
-        #     gen_kwargs['decoder_input_ids'] = forced_decoder_ids
+        if 'lite-whisper' in args.model_id:
+            gen_kwargs['language'] = 'en'
+            gen_kwargs['task'] = 'transcribe'
+            gen_kwargs['generation_config'] = GenerationConfig.from_pretrained("openai/whisper-large-v3-turbo")
+
+            # forced_decoder_ids = processor.get_decoder_prompt_ids(
+            #     language="english", task="transcribe",
+            # )
+            # forced_decoder_ids = torch.tensor([[token_id for _, token_id in forced_decoder_ids]]).to(model.device)
+            # print(forced_decoder_ids)
+            # gen_kwargs['decoder_start_token_id'] = forced_decoder_ids
 
     # elif args.max_new_tokens:
     #     raise ValueError('max_new_tokens is only valid for seq2seq models')

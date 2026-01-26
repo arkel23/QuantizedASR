@@ -248,21 +248,27 @@ def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
                 # if 'lite-whisper' in args.model_id:
                 #     return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens, language='english', task='transcribe')
 
-                # from moonshine/run_eval.py
-                # Create a mask for output tokens to limit length based on input audio clip length.
-                # Add 2 to token limits to account for <sot> and <eot>.
-                # token_generation_limits = [len(clip) * 6.5 // 16000 + 2 for clip in audios]
-                # max_new_tokens = torch.tensor(token_generation_limits).reshape((-1, 1)).to(args.device)
+                if 'moonshine' in args.model_id:
+                    # from moonshine/run_eval.py
+                    # Create a mask for output tokens to limit length based on input audio clip length.
+                    # Add 2 to token limits to account for <sot> and <eot>.
+                    # print(inputs)
+                    audios = inputs.pop('audios')
+                    token_generation_limits = [len(clip) * 6.5 // 16000 + 2 for clip in audios]
+                    max_new_tokens = torch.tensor(token_generation_limits).reshape((-1, 1)).to(model.device)
+                    pred_ids = model.generate(**inputs, max_new_tokens=max_new_tokens.max())
 
-                pred_ids = model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
+                    output_mask = torch.arange(pred_ids.shape[-1]).repeat((pred_ids.shape[0], 1)).to(model.device)
+                    output_mask = output_mask > max_new_tokens
 
-                # output_mask = torch.arange(pred_ids.shape[-1]).repeat((pred_ids.shape[0], 1)).to(args.device)
-                # output_mask = output_mask > max_new_tokens
+                    eot_token = model.config.eos_token_id
+                    pred_ids.masked_fill(output_mask, eot_token)
 
-                # eot_token = model.config.eos_token_id
-                # pred_ids.masked_fill(output_mask, eot_token)
+                    return pred_ids
 
-                return pred_ids
+                # pred_ids = model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
+
+                return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
 
             else:
                 # 2.2. Single forward pass for CTC

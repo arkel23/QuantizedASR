@@ -30,12 +30,15 @@ distil-whisper/distil-large-v2
 distil-whisper/distil-large-v3
 mistralai/Voxtral-Mini-3B-2507
 mistralai/Voxtral-Small-24B-2507
+
 # update 01/23
 ibm-granite/granite-speech-3.3-2b
 ibm-granite/granite-speech-3.3-8b
 nyrahealth/CrisperWhisper
 
-# partial reproduction (acc lower)
+# update 01/26
+# need to set language and task in advance for lite-whisper
+# need to set transcription length masks for moonshine
 efficient-speech/lite-whisper-large-v3-acc
 efficient-speech/lite-whisper-large-v3
 efficient-speech/lite-whisper-large-v3-fast
@@ -44,6 +47,10 @@ efficient-speech/lite-whisper-large-v3-turbo
 efficient-speech/lite-whisper-large-v3-turbo-fast
 usefulsensors/moonshine-base
 usefulsensors/moonshine-tiny
+
+# partial reproduction (acc lower)
+
+
 
 ```
 

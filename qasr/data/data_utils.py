@@ -114,6 +114,7 @@ def preprocess_batch(batch, processor, model, model_input_name, args):
             return_tensors='pt',
             padding=True,
         )
+        inputs['audios'] = audios
     elif not model.can_generate():
         # 1.2 Either CTC pre-processing (normalize to mean 0, std 1), or long-form Whisper processing
         inputs = processor(
