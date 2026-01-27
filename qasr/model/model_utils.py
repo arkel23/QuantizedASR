@@ -59,8 +59,17 @@ def add_transcription_prompt_to_processor(processor, model_id, language='en'):
         ]
 
         text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-
         processor.prompt_asr = text
+
+    elif 'Phi4' in model_id:
+        user = "<|user|>"
+        assistant = "<|assistant|>"
+        prompt_suffix = "<|end|>"
+        user_prompt = "Transcribe the audio clip into text."
+
+        prompt = f"{user}<|audio_1|>{user_prompt}{prompt_suffix}{assistant}"
+
+        processor.prompt_asr = prompt
 
     # THIS DOES NOT MAKE ANY DIFFERENCE IN WER
     # elif 'lite-whisper' in model_id:
@@ -117,6 +126,7 @@ def load_model_and_processor(args):
     elif 'audio-flamingo' in args.model_id:
         cls = AudioFlamingo3ForConditionalGeneration
     elif 'Phi4' in args.model_id:
+        raise NotImplementedError
         cls = AutoModelForCausalLM
     elif 'lite-whisper' in args.model_id:
         cls = AutoModel

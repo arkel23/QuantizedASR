@@ -2,6 +2,11 @@ import torch
 from datasets import load_dataset, Audio
 from transformers import VoxtralProcessor, GraniteSpeechProcessor, \
     Qwen2AudioProcessor, Qwen2_5OmniProcessor
+try:
+    from transformers import AudioFlamingo3Processor
+except:
+    # placeholder way to make sure it is a lalm style processor
+    AudioFlamingo3Processor = VoxtralProcessor
 
 from .normalizer import EnglishTextNormalizer, BasicMultilingualTextNormalizer
 
@@ -180,10 +185,11 @@ def postprocess_predictions(pred_ids, padding_size, inputs, processor, normalize
     if padding_size is not None:
         pred_ids = pred_ids[:-padding_size, ...]
 
-    print(inputs.input_ids, inputs.input_ids.shape, pred_ids.shape)
+    print(inputs, inputs.input_ids, pred_ids)
+    # print(inputs.input_ids, inputs.input_ids.shape, pred_ids.shape)
 
     # 3.2 Convert token ids to text transcription
-    if type(processor) in [VoxtralProcessor, GraniteSpeechProcessor, Qwen2AudioProcessor, Qwen2_5OmniProcessor]:
+    if type(processor) in [VoxtralProcessor, GraniteSpeechProcessor, Qwen2AudioProcessor, Qwen2_5OmniProcessor, AudioFlamingo3Processor]:
     # if type(processor) in [VoxtralProcessor]:
         # Decode predictions - skip the prompt tokens
         # Voxtral includes prompt tokens in output, so we slice from input_ids length
