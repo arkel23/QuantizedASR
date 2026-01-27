@@ -52,7 +52,7 @@ usefulsensors/moonshine-tiny
 nvidia/audio-flamingo-3-hf
 Qwen/Qwen2-Audio-7B
 Qwen/Qwen2-Audio-7B-Instruct
-Qwen/Qwen2.5-Omni-7B
+Qwen/Qwen2.5-Omni-7B 
 ```
 
 Autoregressive LALMs such as Voxtral or Granite require adjusting max_new_tokens to at least 200 (number used by Granite in paper)

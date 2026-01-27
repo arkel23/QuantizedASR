@@ -9,7 +9,7 @@ def parse_args():
     parser.add_argument('--model_id', type=str, default='openai/whisper-tiny.en')
     parser.add_argument('--max_new_tokens', type=int, default=None,
                          help='Max num of tokens to generate')
-    parser.add_argument('--max_think_tokens', type=int, default=20,
+    parser.add_argument('--max_think_tokens', type=int, default=256,
                          help='Max num of tokens to generate')
     parser.add_argument('--model_dtype', type=str, default='float32',
                         choices=['auto', 'bfloat16', 'float16', 'float32'])
@@ -54,7 +54,10 @@ def parse_args():
 
     args.device = f"cuda:{args.device}" if args.device != -1 else "cpu"
 
-    if 'Voxtral' in args.model_id and args.max_new_tokens is None:
-        args.max_new_tokens = 512
+    if any([model_family in args.model_id for model_family in ['Voxtral', 'Qwen', 'granite', 'flamingo']]) and args.max_new_tokens is None:
+        args.max_new_tokens = 200
+
+    if 'Qwen2.5-Omni' in args.model_id:
+        args.batch_size = 1
 
     return args

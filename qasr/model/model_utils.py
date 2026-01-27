@@ -42,11 +42,14 @@ def add_transcription_prompt_to_processor(processor, model_id, language='en'):
 
         processor.prompt_asr = text
     elif 'Qwen2-Audio' in model_id:
+        # https://huggingface.co/Qwen/Qwen2-Audio-7B
+        # https://github.com/QwenLM/Qwen2-Audio/blob/main/eval_audio/evaluate_asr.py
         # prompt = "<|audio_bos|><|AUDIO|><|audio_eos|>Generate the caption in English:"
         prompt = f"<|audio_bos|><|AUDIO|><|audio_eos|>Detect the language and recognize the speech: <|{language}|>"
         processor.prompt_asr = prompt
 
     elif 'Qwen2.5-Omni' in model_id:
+        # https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/universal_audio_understanding.ipynb
         prompt = "Transcribe the English audio into text without any punctuation marks."
         system_prompt='You are a speech recognition model.'
         messages = [
@@ -70,10 +73,6 @@ def add_transcription_prompt_to_processor(processor, model_id, language='en'):
         prompt = f"{user}<|audio_1|>{user_prompt}{prompt_suffix}{assistant}"
 
         processor.prompt_asr = prompt
-
-    # THIS DOES NOT MAKE ANY DIFFERENCE IN WER
-    # elif 'lite-whisper' in model_id:
-    #     processor.tokenizer.set_prefix_tokens(language='english', task='transcribe')
 
     return processor
 
@@ -193,14 +192,6 @@ def load_model_and_processor(args):
             gen_kwargs['language'] = 'en'
             gen_kwargs['task'] = 'transcribe'
             gen_kwargs['generation_config'] = GenerationConfig.from_pretrained("openai/whisper-large-v3-turbo")
-
-            # forced_decoder_ids = processor.get_decoder_prompt_ids(
-            #     language="english", task="transcribe",
-            # )
-            # forced_decoder_ids = torch.tensor([[token_id for _, token_id in forced_decoder_ids]]).to(model.device)
-            # print(forced_decoder_ids)
-            # gen_kwargs['decoder_start_token_id'] = forced_decoder_ids
-
 
     # elif args.max_new_tokens:
     #     raise ValueError('max_new_tokens is only valid for seq2seq models')
