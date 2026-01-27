@@ -266,8 +266,14 @@ def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
                         **inputs, **gen_kwargs, return_audio=False,
                         thinker_max_new_tokens=getattr(args, 'max_think_tokens', 256), thinker_do_sample=False
                     )
-                elif 'phi4' in args.model_id:
+                    return pred_ids
+                elif 'Phi4' in args.model_id:
                     # https://github.com/huggingface/open_asr_leaderboard/blob/main/phi/run_eval.py
+                    pred_ids = model.generate(
+                        **inputs, **gen_kwargs, 
+                        ad_token_id=processor.tokenizer.pad_tokenizer_id,
+                        eos_token_id=processor.tokenizer.eos_token_id,
+                    )
                     raise NotImplementedError
 
                 return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)

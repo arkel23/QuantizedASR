@@ -128,6 +128,13 @@ def preprocess_batch(batch, processor, model, model_input_name, args):
             return_tensors='pt',
             padding=True,
         )
+    elif 'Phi4' in args.model_id:
+        inputs = processor(
+            text=[processor.prompt_asr] * len(audios),
+            audios=audios,
+            return_tensors='pt',
+            # device=args.device,
+        )
     elif 'granite' in args.model_id:
         inputs = processor(
             [processor.prompt_asr] * len(audios),
@@ -185,11 +192,12 @@ def postprocess_predictions(pred_ids, padding_size, inputs, processor, normalize
     if padding_size is not None:
         pred_ids = pred_ids[:-padding_size, ...]
 
-    print(inputs, inputs.input_ids, pred_ids)
+    # print(inputs, inputs.input_ids, pred_ids)
     # print(inputs.input_ids, inputs.input_ids.shape, pred_ids.shape)
 
     # 3.2 Convert token ids to text transcription
-    if type(processor) in [VoxtralProcessor, GraniteSpeechProcessor, Qwen2AudioProcessor, Qwen2_5OmniProcessor, AudioFlamingo3Processor]:
+    # if type(processor) in [VoxtralProcessor, GraniteSpeechProcessor, Qwen2AudioProcessor, Qwen2_5OmniProcessor, AudioFlamingo3Processor]:
+    if type(processor) in [VoxtralProcessor, GraniteSpeechProcessor, Qwen2AudioProcessor, AudioFlamingo3Processor]:
     # if type(processor) in [VoxtralProcessor]:
         # Decode predictions - skip the prompt tokens
         # Voxtral includes prompt tokens in output, so we slice from input_ids length
@@ -219,7 +227,7 @@ def postprocess_predictions(pred_ids, padding_size, inputs, processor, normalize
     else:
         texts = processor.batch_decode(pred_ids, skip_special_tokens=True)
 
-    print(texts)
+    print(inputs.input_ids, pred_ids, texts)
 
     # normalize transcriptions with English normalizer
     preds = [normalizer(t) for t in texts]
