@@ -1,7 +1,7 @@
 import torch
 from datasets import load_dataset, Audio
 from transformers import VoxtralProcessor, GraniteSpeechProcessor, \
-    Qwen2AudioForConditionalGeneration, Qwen2_5OmniProcessor
+    Qwen2AudioProcessor, Qwen2_5OmniProcessor
 
 from .normalizer import EnglishTextNormalizer, BasicMultilingualTextNormalizer
 
@@ -160,7 +160,8 @@ def preprocess_batch(batch, processor, model, model_input_name, args):
     dtype = getattr(torch, args.data_dtype, None) if getattr(args, 'data_dtype', None) else torch.float32
 
     inputs = inputs.to(args.device)
-    if 'Qwen2-Audio' in args.model_id or 'Qwen2.5-Omni' in args.model_id:
+    # if 'Qwen2-Audio' in args.model_id or 'Qwen2.5-Omni' in args.model_id:
+    if 'Qwen2' in args.model_id or 'audio-flamingo' in args.model_id:
         inputs['input_features'] = inputs['input_features'].to(dtype)
     else:
         inputs[model_input_name] = inputs[model_input_name].to(dtype)
@@ -174,12 +175,15 @@ def preprocess_batch(batch, processor, model, model_input_name, args):
 
 def postprocess_predictions(pred_ids, padding_size, inputs, processor, normalizer):
     # 3.1 Strip padded ids from predictions
+    # print(inputs, inputs.input_ids.shape, pred_ids.shape)
+
     if padding_size is not None:
         pred_ids = pred_ids[:-padding_size, ...]
 
-    # 3.2 Convert token ids to text transcription
+    print(inputs.input_ids, inputs.input_ids.shape, pred_ids.shape)
 
-    if type(processor) in [VoxtralProcessor, GraniteSpeechProcessor, Qwen2AudioForConditionalGeneration, Qwen2_5OmniProcessor]:
+    # 3.2 Convert token ids to text transcription
+    if type(processor) in [VoxtralProcessor, GraniteSpeechProcessor, Qwen2AudioProcessor, Qwen2_5OmniProcessor]:
     # if type(processor) in [VoxtralProcessor]:
         # Decode predictions - skip the prompt tokens
         # Voxtral includes prompt tokens in output, so we slice from input_ids length
@@ -208,6 +212,8 @@ def postprocess_predictions(pred_ids, padding_size, inputs, processor, normalize
 
     else:
         texts = processor.batch_decode(pred_ids, skip_special_tokens=True)
+
+    print(texts)
 
     # normalize transcriptions with English normalizer
     preds = [normalizer(t) for t in texts]

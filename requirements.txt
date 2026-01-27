@@ -40,6 +40,7 @@ pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.
 
 # for phi4
 # pip3 install backoff
+# pip3 install flash-attn --no-build-isolation
 
 # torch>=2.1
 # transformers>=4.36

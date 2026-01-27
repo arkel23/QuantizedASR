@@ -6,11 +6,12 @@ from transformers import (
     AutoModelForSpeechSeq2Seq,
     AutoModelForCTC,
     AutoProcessor,
-    Qwen2_5OmniProcessor,
+    # Qwen2_5OmniProcessor,
     MODEL_FOR_SPEECH_SEQ_2_SEQ_MAPPING,
     VoxtralForConditionalGeneration,
     Qwen2AudioForConditionalGeneration,
     Qwen2_5OmniForConditionalGeneration,
+    AutoModelForCausalLM,
     GenerationConfig,
     BitsAndBytesConfig,
 )
@@ -21,7 +22,7 @@ except:
     print('HF transformers>5 can use AudioFlamingo3')
 
 
-def add_transcription_prompt_to_processor(processor, model_id):
+def add_transcription_prompt_to_processor(processor, model_id, language='en'):
     if 'granite' in model_id:
         # create text prompt
         chat = [
@@ -41,7 +42,8 @@ def add_transcription_prompt_to_processor(processor, model_id):
 
         processor.prompt_asr = text
     elif 'Qwen2-Audio' in model_id:
-        prompt = "<|audio_bos|><|AUDIO|><|audio_eos|>Generate the caption in English:"
+        # prompt = "<|audio_bos|><|AUDIO|><|audio_eos|>Generate the caption in English:"
+        prompt = f"<|audio_bos|><|AUDIO|><|audio_eos|>Detect the language and recognize the speech: <|{language}|>"
         processor.prompt_asr = prompt
 
     elif 'Qwen2.5-Omni' in model_id:
@@ -71,28 +73,16 @@ def prepare_processor(args):
     if 'lite-whisper' in args.model_id:
         # id = 'openai/whisper-large-v3-turbo' if 'turbo' in args.model_id else 'openai/whisper-large-v3'
         processor = AutoProcessor.from_pretrained('openai/whisper-large-v3-turbo', trust_remote_code=True)
-    elif 'Qwen2' in args.model_id:
-        processor = Qwen2_5OmniProcessor.from_pretrained(args.model_id)
+    # elif 'Qwen2_Omni' in args.model_id:
+    #     processor = Qwen2_5OmniProcessor.from_pretrained(args.model_id)
     else:
         processor = AutoProcessor.from_pretrained(args.model_id, trust_remote_code=True)
-    processor = add_transcription_prompt_to_processor(processor, args.model_id)
+    processor = add_transcription_prompt_to_processor(processor, args.model_id, args.force_asr_language)
     return processor
 
 
 def get_dtype_quantization_config(args):
-    # default is torch.float (fp32), others: torch.float16/bfloat16
-    # model_dtype = getattr(args, 'model_dtype', 'auto')
-    # if 'model_dtype' in ['bfloat16', 'float16', 'float32']:
-    #     model_dtype = getattr(torch, model_dtype, torch.float32)
     model_dtype = getattr(torch, args.model_dtype, 'auto') if getattr(args, 'model_dtype', None) else 'auto'
-    # if args.model_dtype == 'bfloat16':
-    #     model_dtype = torch.bfloat16
-    # elif args.model_dtype == 'float16':
-    #     model_dtype = torch.float16
-    # elif args.model_dtype == 'float32':
-    #     model_dtype = torch.float
-    # else:
-    #     model_dtype = 'auto'
 
     act_dtype = getattr(torch, args.act_dtype, None) if getattr(args, 'act_dtype', None) else torch.float32
 
@@ -126,6 +116,8 @@ def load_model_and_processor(args):
         cls = Qwen2AudioForConditionalGeneration
     elif 'audio-flamingo' in args.model_id:
         cls = AudioFlamingo3ForConditionalGeneration
+    elif 'Phi4' in args.model_id:
+        cls = AutoModelForCausalLM
     elif 'lite-whisper' in args.model_id:
         cls = AutoModel
     elif type(config) in MODEL_FOR_SPEECH_SEQ_2_SEQ_MAPPING:

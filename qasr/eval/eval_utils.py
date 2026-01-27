@@ -244,15 +244,10 @@ def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
     with torch.no_grad():
         with torch.autocast(device_type=model.device.type, dtype=dtype):
             if model.can_generate():
-                # 2.1 Auto-regressive generation for encoder-decoder models
-                # if 'lite-whisper' in args.model_id:
-                #     return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens, language='english', task='transcribe')
-
                 if 'moonshine' in args.model_id:
                     # from moonshine/run_eval.py
                     # Create a mask for output tokens to limit length based on input audio clip length.
                     # Add 2 to token limits to account for <sot> and <eot>.
-                    # print(inputs)
                     audios = inputs.pop('audios')
                     token_generation_limits = [len(clip) * 6.5 // 16000 + 2 for clip in audios]
                     max_new_tokens = torch.tensor(token_generation_limits).reshape((-1, 1)).to(model.device)
@@ -269,12 +264,11 @@ def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
                 elif 'Qwen2.5-Omni' in args.model_id:
                     pred_ids = model.generate(
                         **inputs, **gen_kwargs, return_audio=False,
-                        thinker_max_new_tokens=256, thinker_do_sample=False
+                        thinker_max_new_tokens=getattr(args, 'max_think_tokens', 256), thinker_do_sample=False
                     )
                 elif 'phi4' in args.model_id:
+                    # https://github.com/huggingface/open_asr_leaderboard/blob/main/phi/run_eval.py
                     raise NotImplementedError
-
-                # pred_ids = model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
 
                 return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
 
