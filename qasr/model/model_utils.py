@@ -124,8 +124,8 @@ def get_dtype_quantization_config(args):
 
     elif args.quant_config == 'hqq':
         quantization_config = HqqConfig(
-            # can be 2, 3, 4, or 8 bits
-            nbits=getattr(args, 'quant_dtype_weights', 4),
+            # can be 1, 2, 3, 4, or 8 bits
+            nbits=int(getattr(args, 'quant_dtype_weights', 4)),
             group_size=getattr(args, 'quant_group_size', 64),
             # view_as_float if True quantized param is viewed as float instead of int
             # can specify specific layers
