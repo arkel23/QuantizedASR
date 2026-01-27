@@ -16,8 +16,9 @@ def parse_args():
     parser.add_argument('--force_asr_language', type=str, default=None)
 
     parser.add_argument('--quant_config', type=str, default=None,
-                        choices=['bnb'])
+                        choices=['bnb', 'quanto', 'hqq'])
     parser.add_argument('--quant_dtype_weights', type=str, default=None)
+    parser.add_argument('--quant_dtype_acts', type=str, default=None)
 
     # bitsandbytes
     parser.add_argument('--bnb_int8_threshold', type=float, default=6.0)

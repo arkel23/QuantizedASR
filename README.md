@@ -49,10 +49,12 @@ usefulsensors/moonshine-base
 usefulsensors/moonshine-tiny
 
 # update 01/27
-nvidia/audio-flamingo-3-hf
 Qwen/Qwen2.5-Omni-7B 
 
 # partial (does not match reported results)
+# nvidia is probably due to output format: includes prefixes such as the audio is
+nvidia/audio-flamingo-3-hf
+# unsure about the issue with qwen2-audio but the results are okay-ish
 Qwen/Qwen2-Audio-7B
 Qwen/Qwen2-Audio-7B-Instruct
 ```

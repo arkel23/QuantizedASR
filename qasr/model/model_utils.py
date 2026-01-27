@@ -6,7 +6,6 @@ from transformers import (
     AutoModelForSpeechSeq2Seq,
     AutoModelForCTC,
     AutoProcessor,
-    # Qwen2_5OmniProcessor,
     MODEL_FOR_SPEECH_SEQ_2_SEQ_MAPPING,
     VoxtralForConditionalGeneration,
     Qwen2AudioForConditionalGeneration,
@@ -14,6 +13,8 @@ from transformers import (
     AutoModelForCausalLM,
     GenerationConfig,
     BitsAndBytesConfig,
+    QuantoConfig,
+    HqqConfig,
 )
 
 try:
@@ -112,6 +113,44 @@ def get_dtype_quantization_config(args):
             bnb_4bit_use_double_quant=getattr(args, 'bnb_4bit_use_double_quant', False),
             bnb_4bit_quant_type=getattr(args, 'bnb_4bit_quant_type', 'fp4'), # can be fp4 or nf4
         )
+
+    elif args.quant_config == 'quanto':
+        # weights can be None, int2, int4, int8, float8
+        # acts can be None, int8, float8
+        quantization_config = QuantoConfig(
+            weights=getattr(args, 'quant_dtype_weights', 'int8'),
+            activations=getattr(args, 'quant_dtype_acts', 'int8')
+        )
+
+    elif args.quant_config == 'hqq':
+        quantization_config = HqqConfig(
+            # can be 2, 3, 4, or 8 bits
+            nbits=getattr(args, 'quant_dtype_weights', 4),
+            group_size=getattr(args, 'quant_group_size', 64),
+            # view_as_float if True quantized param is viewed as float instead of int
+            # can specify specific layers
+            # dynamic_config={
+            # 'self_attn.q_proj':q4_config,
+            # 'mlp.up_proj'  :q3_config,
+            # }
+            # https://github.com/dropbox/hqq/blob/master/examples/models/whisper.py
+        )
+
+    elif args.quant_config == 'torchao':
+        # in active development, implement in future
+        # https://huggingface.co/docs/transformers/main/quantization/torchao
+        raise NotImplementedError
+        # it has support for regex matching for layers for specific configs
+        # from torchao.quantization import Float8DynamicActivationFloat8WeightConfig, Float8WeightOnlyConfig
+        # Int8DynamicActivationInt8WeightConfig
+        quant_config = Float8DynamicActivationFloat8WeightConfig()
+        # or float8 weight only quantization
+        quant_config = Int4WeightOnlyConfig()
+        # from torchao.quantization import Int4WeightOnlyConfig
+        # from torchao.dtypes import MarlinSparseLayout
+        # quant_config = Int4WeightOnlyConfig(layout=MarlinSparseLayout())
+        # quant_config = Float8WeightOnlyConfig()
+        quantization_config = TorchAoConfig(quant_type=quant_config)
 
     return model_dtype, quantization_config
 
