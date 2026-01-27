@@ -48,11 +48,22 @@ efficient-speech/lite-whisper-large-v3-turbo-fast
 usefulsensors/moonshine-base
 usefulsensors/moonshine-tiny
 
-# partial reproduction (acc lower)
+# update 01/27
 nvidia/audio-flamingo-3-hf
+Qwen/Qwen2.5-Omni-7B 
+
+# partial (does not match reported results)
 Qwen/Qwen2-Audio-7B
 Qwen/Qwen2-Audio-7B-Instruct
-Qwen/Qwen2.5-Omni-7B 
+```
+
+To add:
+```
+microsoft/Phi-4-multimodal-instruct
+canary family
+parakeet family
+stepaudio-r1
+ultravox
 ```
 
 Autoregressive LALMs such as Voxtral or Granite require adjusting max_new_tokens to at least 200 (number used by Granite in paper)

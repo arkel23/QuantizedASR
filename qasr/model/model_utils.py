@@ -74,6 +74,11 @@ def add_transcription_prompt_to_processor(processor, model_id, language='en'):
 
         processor.prompt_asr = prompt
 
+        stop_tokens = [prompt_suffix, processor.tokenizer.eos_token]
+        stop_tokens_ids = processor.tokenizer(stop_tokens, add_special_tokens=False, padding="longest", return_tensors="pt")["input_ids"]
+
+        processor.stop_tokens_ids = stop_tokens_ids
+
     return processor
 
 
@@ -116,6 +121,7 @@ def load_model_and_processor(args):
 
     model_dtype, quantization_config = get_dtype_quantization_config(args)
 
+
     if 'Voxtral' in args.model_id:
         cls = VoxtralForConditionalGeneration
     elif 'Qwen2.5-Omni' in args.model_id:
@@ -125,7 +131,6 @@ def load_model_and_processor(args):
     elif 'audio-flamingo' in args.model_id:
         cls = AudioFlamingo3ForConditionalGeneration
     elif 'Phi4' in args.model_id:
-        raise NotImplementedError
         cls = AutoModelForCausalLM
     elif 'lite-whisper' in args.model_id:
         cls = AutoModel
@@ -141,6 +146,8 @@ def load_model_and_processor(args):
             device_map='auto',
             quantization_config=quantization_config,
         )
+    elif 'Phi4' in args.model_id:
+        raise NotImplementedError
     else:
         # https://huggingface.co/docs/transformers/main/en/main_classes/model#transformers.PreTrainedModel.from_pretrained
         model = cls.from_pretrained(
@@ -158,8 +165,10 @@ def load_model_and_processor(args):
             trust_remote_code=True,
         )
 
+
     processor = prepare_processor(args)
     model_input_name = processor.model_input_names[0]
+
 
     gen_kwargs = None
     if model.can_generate():
@@ -178,6 +187,14 @@ def load_model_and_processor(args):
                 # 'repetition_penalty': 1.0, 1.0 means no penalty
             })
 
+        if 'Phi4' in args.model_id:
+            stop_token_ids = processor.stop_tokens_ids.to(model.device)
+            gen_kwargs.update({
+                'stop_tokens_ids': stop_token_ids,
+                'ad_token_id': processor.tokenizer.pad_tokenizer_id,
+                'eos_token_id': processor.tokenizer.eos_token_id,
+            })
+
         if args.force_asr_language:
             gen_kwargs['language'] = args.force_asr_language
             gen_kwargs['task'] = 'transcribe'
@@ -193,13 +210,12 @@ def load_model_and_processor(args):
             gen_kwargs['task'] = 'transcribe'
             gen_kwargs['generation_config'] = GenerationConfig.from_pretrained("openai/whisper-large-v3-turbo")
 
-    # elif args.max_new_tokens:
-    #     raise ValueError('max_new_tokens is only valid for seq2seq models')
 
     if args.torch_compile:
         model.forward = torch.compile(model.forward, mode=args.compile_mode, fullgraph=True)
         if model.can_generate():
             # enable static k/v cache for autoregressive models
             model.generation_config.cache_implementation = 'static'
+
 
     return model, processor, model_input_name, gen_kwargs

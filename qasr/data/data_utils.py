@@ -187,47 +187,52 @@ def preprocess_batch(batch, processor, model, model_input_name, args):
 
 def postprocess_predictions(pred_ids, padding_size, inputs, processor, normalizer):
     # 3.1 Strip padded ids from predictions
-    # print(inputs, inputs.input_ids.shape, pred_ids.shape)
-
     if padding_size is not None:
         pred_ids = pred_ids[:-padding_size, ...]
 
-    # print(inputs, inputs.input_ids, pred_ids)
-    # print(inputs.input_ids, inputs.input_ids.shape, pred_ids.shape)
-
     # 3.2 Convert token ids to text transcription
-    if type(processor) in [VoxtralProcessor, GraniteSpeechProcessor, Qwen2AudioProcessor, Qwen2_5OmniProcessor, AudioFlamingo3Processor]:
-    # if type(processor) in [VoxtralProcessor, GraniteSpeechProcessor, Qwen2AudioProcessor, AudioFlamingo3Processor]:
-    # if type(processor) in [VoxtralProcessor]:
+
+    '''
+    # phi4
+    if type(processor) == Phi4Processor:
+        # Gather the sequence index of the stop token
+        stop_tokens_idx = gen_kwargs["stopping_criteria"][0].stop_tokens_idx.reshape(inputs.input_ids.shape[0], -1)[:, 0]
+
+        # If a stop token was produced, we need to remove its length from the found index,
+        # however there might be a chance that the stop token was not produced and the index
+        # returned is the length of the generated sequence
+        stop_tokens_idx = torch.where(
+            stop_tokens_idx > 0,
+            stop_tokens_idx - processor.stop_tokens_ids.shape[-1],
+            pred_ids.shape[-1],
+        )
+
+        # Convert token ids to text transcription
+        pred_text = [
+            processor.decode(_pred_ids[inputs["input_ids"].shape[1] : _stop_tokens_idx], skip_special_tokens=True, clean_up_tokenization_spaces=False)
+            for _pred_ids, _stop_tokens_idx in zip(pred_ids, stop_tokens_idx)
+        ]
+    '''
+
+    if type(processor) in [AudioFlamingo3Processor]:
+        texts = processor.batch_decode(
+            pred_ids[:, inputs.input_ids.shape[1]:],
+            skip_special_tokens=True,
+            strip_prefix=True,
+        )
+
+    elif type(processor) in [VoxtralProcessor, GraniteSpeechProcessor, Qwen2AudioProcessor, Qwen2_5OmniProcessor]:
         # Decode predictions - skip the prompt tokens
         # Voxtral includes prompt tokens in output, so we slice from input_ids length
         texts = processor.batch_decode(
             pred_ids[:, inputs.input_ids.shape[1]:],
-            # add_special_tokens=False,
             skip_special_tokens=True
+            # add_special_tokens=False,
         )
-
-    # throws this error when using qwen2omni
-    # File "/home2/video/edwin/projects/QuantizedASR/qasr/data/data_utils.py", line 186, in postprocess_predictions
-    # pred_ids[:, inputs.input_ids.shape[1]:],
-    # ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    # TypeError: tuple indices must be integers or slices, not tuple
-    # wandb:
-
-
-    # elif type(processor) in [GraniteSpeechProcessor]:
-    #     # Decode predictions - skip the prompt tokens
-    #     # Voxtral includes prompt tokens in output, so we slice from input_ids length
-    #     texts = processor.batch_decode(
-    #         pred_ids[:, inputs.input_ids.shape[1]:],
-    #         add_special_tokens=False,
-    #         skip_special_tokens=True
-    #     )
 
     else:
         texts = processor.batch_decode(pred_ids, skip_special_tokens=True)
 
-    # print(inputs.input_ids, pred_ids, texts)
 
     # normalize transcriptions with English normalizer
     preds = [normalizer(t) for t in texts]

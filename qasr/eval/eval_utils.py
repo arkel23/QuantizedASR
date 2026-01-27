@@ -9,8 +9,41 @@ import evaluate
 from tqdm import tqdm
 import torch
 from torch.nn.attention import sdpa_kernel, SDPBackend
+from transformers import StoppingCriteria, StoppingCriteriaList
 
 from qasr.data.data_utils import preprocess_batch, postprocess_predictions
+
+
+class MultipleTokenBatchStoppingCriteria(StoppingCriteria):
+    # https://github.com/huggingface/open_asr_leaderboard/blob/main/phi/run_eval.py
+    """Stopping criteria capable of receiving multiple stop-tokens and handling batched inputs."""
+
+    def __init__(self, stop_tokens: torch.LongTensor, batch_size: int = 1) -> None:
+        """Initialize the multiple token batch stopping criteria.
+
+        Args:
+            stop_tokens: Stop-tokens.
+            batch_size: Batch size.
+
+        """
+
+        self.stop_tokens = stop_tokens
+        self.max_stop_tokens = stop_tokens.shape[-1]
+        self.stop_tokens_idx = torch.zeros(batch_size, dtype=torch.long, device=stop_tokens.device)
+
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
+        # Only gather the maximum number of inputs compatible with stop tokens
+        # and checks whether generated inputs are equal to `stop_tokens`
+        generated_inputs = torch.eq(input_ids[:, -self.max_stop_tokens :].unsqueeze(1), self.stop_tokens)
+        equal_generated_inputs = torch.all(generated_inputs, dim=2)
+
+        # Mark the position where a stop token has been produced for each input in the batch,
+        # but only if the corresponding entry is not already set
+        sequence_idx = torch.any(equal_generated_inputs, dim=1)
+        sequence_set_mask = self.stop_tokens_idx == 0
+        self.stop_tokens_idx[sequence_idx & sequence_set_mask] = input_ids.shape[-1]
+
+        return torch.all(self.stop_tokens_idx)
 
 
 def count_params(model):
@@ -267,14 +300,13 @@ def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
                         thinker_max_new_tokens=getattr(args, 'max_think_tokens', 256), thinker_do_sample=False
                     )
                     return pred_ids
+
                 elif 'Phi4' in args.model_id:
-                    # https://github.com/huggingface/open_asr_leaderboard/blob/main/phi/run_eval.py
-                    pred_ids = model.generate(
-                        **inputs, **gen_kwargs, 
-                        ad_token_id=processor.tokenizer.pad_tokenizer_id,
-                        eos_token_id=processor.tokenizer.eos_token_id,
-                    )
-                    raise NotImplementedError
+                    stopping_criteria = StoppingCriteriaList([MultipleTokenBatchStoppingCriteria(
+                        gen_kwargs['stop_token_ids'],
+                        batch_size=args.num_beams * inputs.input_ids.shape
+                    )])
+                    gen_kwargs['stopping_criteria'] = stopping_criteria
 
                 return model.generate(**inputs, **gen_kwargs, min_new_tokens=min_new_tokens)
 
