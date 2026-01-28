@@ -123,7 +123,7 @@ def write_manifest(
     basedir = './results/'
     os.makedirs(basedir, exist_ok=True)
 
-    run_name = f'{run_name.replace('/', '-')}.jsonl'
+    run_name = f"{run_name.replace('/', '-')}.jsonl"
 
     manifest_path = os.path.join(basedir, run_name)
     # manifest_path = os.path.join(
