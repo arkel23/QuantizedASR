@@ -126,7 +126,7 @@ def quantization_calibration(dataset, benchmark, model, args):
     weights = keyword_to_dtype(args.quant_dtype_weights)
     activations = keyword_to_dtype(args.quant_dtype_acts)
 
-    model = quantize(model, weights=weights, activations=activations)
+    quantize(model, weights=weights, activations=activations)
 
     print("Calibrating ...")
     with Calibration():
