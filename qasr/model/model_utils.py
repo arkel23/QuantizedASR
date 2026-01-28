@@ -196,7 +196,7 @@ def load_model_and_processor(args):
             # gen_kwargs['forced_decoder_ids'] = None
             # gen_kwargs.pop('language', None)
             # gen_kwargs.pop('task', None)
-            gen_kwargs = None
+            gen_kwargs = {}
             model.config.forced_decoder_ids = None
 
 
