@@ -343,19 +343,9 @@ def make_benchmark_fn(model, processor, normalizer, model_input_name, gen_kwargs
     return benchmark
 
 
-# ================================
-# Warmup
-# ================================
-
 def run_warmup(dataset, benchmark, args):
-    num = args.warmup_steps * args.batch_size
-    if args.streaming:
-        warmup = dataset.take(num)
-    else:
-        warmup = dataset.select(range(min(num, len(dataset))))
-
-    warmup = iter(
-        warmup.map(
+    dataset = iter(
+        dataset.map(
             benchmark,
             batch_size=args.batch_size,
             batched=True,
@@ -365,13 +355,34 @@ def run_warmup(dataset, benchmark, args):
         )
     )
 
-    for _ in tqdm(warmup, desc='Warming up...'):
+    for _ in tqdm(dataset, desc='Warming up...'):
         pass
 
+    return 0
 
-# ================================
-# Evaluation Loop
-# ================================
+
+def quantization_calibration(dataset, benchmark, model, args):
+    from optimum.quanto import Calibration, freeze
+
+    print("Calibrating ...")
+    with Calibration():
+        dataset = iter(
+            dataset.map(
+                benchmark,
+                batch_size=args.batch_size,
+                batched=True,
+            )
+        )
+
+        for _ in tqdm(dataset, desc='Warming up...'):
+            pass
+
+        # evaluate_model(model, processor, processed_dataset, wer, args.batch_size)
+
+    freeze(model)
+
+    return 0
+
 
 def evaluate_dataset(dataset, benchmark, args):
     dataset = dataset.map(

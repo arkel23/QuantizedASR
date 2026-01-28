@@ -1,5 +1,7 @@
 import argparse
 
+import torch
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -62,3 +64,10 @@ def parse_args():
         args.batch_size = 1
 
     return args
+
+
+def init_procedure(args):
+    torch.cuda.reset_peak_memory_stats()
+    if getattr(args, 'float32_matmul_prec', None):
+        torch.set_float32_matmul_precision(args.float32_matmul_prec)
+    return 0

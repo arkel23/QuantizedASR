@@ -75,9 +75,26 @@ def prepare_data(dataset):
     return dataset, normalizer
 
 
-def load_and_prepare_dataset(args):
+def load_and_prepare_dataset(args, warmup=False):
     dataset = load_data(args)
     dataset, normalizer = prepare_data(dataset)
+
+    if warmup:
+        num = args.warmup_steps * args.batch_size
+        if args.streaming:
+            dataset = dataset.take(num)
+        else:
+            dataset = dataset.select(range(min(num, len(dataset))))
+
+        return dataset, normalizer
+
+    if args.max_eval_samples:
+        print(f'Subsampling dataset to first {args.max_eval_samples} samples!')
+        if args.streaming:
+            dataset = dataset.take(args.max_eval_samples)
+        else:
+            dataset = dataset.select(range(min(args.max_eval_samples, len(dataset))))
+
     return dataset, normalizer
 
 

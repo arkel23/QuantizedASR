@@ -35,6 +35,8 @@ pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.
 # other quant types
 # pip3 install hqq
 # pip3 install dynamo-quanto
+# pip3 install torchao
+# pip3 install fbgemm-gpu-genai
 
 # when using granite need
 # pip3 install torchaudio peft
