@@ -12,11 +12,9 @@ from transformers import (
     Qwen2_5OmniForConditionalGeneration,
     AutoModelForCausalLM,
     GenerationConfig,
-    BitsAndBytesConfig,
-    QuantoConfig,
-    HqqConfig,
-    TorchAoConfig,
 )
+
+from .quant_utils import get_dtype_quantization_config
 
 try:
     from transformers import AudioFlamingo3ForConditionalGeneration
@@ -94,84 +92,6 @@ def prepare_processor(args):
         processor = AutoProcessor.from_pretrained(args.model_id, trust_remote_code=True)
     processor = add_transcription_prompt_to_processor(processor, args.model_id, args.force_asr_language)
     return processor
-
-
-def get_dtype_quantization_config(args):
-    model_dtype = getattr(torch, args.model_dtype, 'auto') if getattr(args, 'model_dtype', None) else 'auto'
-
-    act_dtype = getattr(torch, args.act_dtype, None) if getattr(args, 'act_dtype', None) else torch.float32
-
-    quantization_config=None
-    if args.quant_config == 'bnb' and args.quant_dtype_weights == '8bit':
-        quantization_config = BitsAndBytesConfig(
-            load_in_8bit=True,
-            llm_int8_threshold=getattr(args, 'bnb_int8_threshold', 6.0),
-        )
-    elif args.quant_config == 'bnb' and args.quant_dtype_weights == '4bit':
-        quantization_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=act_dtype,
-            bnb_4bit_use_double_quant=getattr(args, 'bnb_4bit_use_double_quant', False),
-            bnb_4bit_quant_type=getattr(args, 'bnb_4bit_quant_type', 'fp4'), # can be fp4 or nf4
-        )
-
-    elif args.quant_config == 'quanto':
-        # weights can be None, int2, int4, int8, float8
-        # acts can be None, int8, float8
-        quantization_config = QuantoConfig(
-            weights=getattr(args, 'quant_dtype_weights', 'int8'),
-            activations=getattr(args, 'quant_dtype_acts', None)
-        )
-
-    elif args.quant_config == 'hqq':
-        quantization_config = HqqConfig(
-            # can be 1, 2, 3, 4, or 8 bits
-            nbits=int(getattr(args, 'quant_dtype_weights', 4)),
-            group_size=getattr(args, 'quant_group_size', 64),
-            # view_as_float if True quantized param is viewed as float instead of int
-            # can specify specific layers
-            # dynamic_config={
-            # 'self_attn.q_proj': q4_config,
-            # 'mlp.up_proj': q3_config,
-            # }
-            # https://github.com/dropbox/hqq/blob/master/examples/models/whisper.py
-        )
-
-    elif args.quant_config == 'torchao':
-        from torchao.quantization import (IntxWeightOnlyConfig, Int4WeightOnlyConfig, Int8WeightOnlyConfig,
-                                          Float8WeightOnlyConfig, \
-                                          Int8DynamicActivationInt4WeightConfig, \
-                                          Int8DynamicActivationInt8WeightConfig, \
-                                          Float8DynamicActivationFloat8WeightConfig) 
-
-        # in active development
-        # https://huggingface.co/docs/transformers/main/quantization/torchao
-
-        # it has support for regex matching for layers for specific configs
-        # set default to int4 (for linears), and skip quantizing `model.layers.0.self_attn.q_proj`
-        # quant_config = FqnToConfig({"_default": config, "model.layers.0.self_attn.q_proj": None})
-
-        # from torchao.dtypes import MarlinSparseLayout
-        # quant_config = Int4WeightOnlyConfig(layout=MarlinSparseLayout())
-
-        if args.quant_dtype_weights == 'int4' and args.quant_dtype_acts == 'int8':
-            quantization_config = TorchAoConfig(quant_type=Int8DynamicActivationInt4WeightConfig())
-        elif args.quant_dtype_weights == 'int8' and args.quant_dytpe_acts == 'int8':
-            quantization_config = TorchAoConfig(quant_type=Int8DynamicActivationInt8WeightConfig())
-        elif args.quant_dtype_weights == 'float8' and args.quant_dtype_acts == 'float8':
-            quantization_config = TorchAoConfig(quant_type=Float8DynamicActivationFloat8WeightConfig())
-        elif args.quant_dtype_weights == 'int4':
-            # requires fpgemm-gpu-genai >= 1.2.0
-            quantization_config = TorchAoConfig(quant_type=Int4WeightOnlyConfig())
-        elif args.quant_dtype_weights == 'int8':
-            quantization_config = TorchAoConfig(quant_type=Int8WeightOnlyConfig())
-        elif args.quant_dtype_weights == 'float8':
-            quantization_config = TorchAoConfig(quant_type=Float8WeightOnlyConfig())
-        elif args.quant_dtype_weights and args.quant_dtype_weights.isnumeric():
-            dtype = getattr(torch, f'int{args.quant_dtype_weights}', 'int8')
-            quantization_config = TorchAoConfig(quant_type=IntxWeightOnlyConfig(weight_dtype=dtype))
-
-    return model_dtype, quantization_config
 
 
 def load_model_and_processor(args):
