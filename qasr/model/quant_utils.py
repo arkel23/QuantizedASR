@@ -53,7 +53,7 @@ def get_dtype_quantization_config(args):
             bnb_4bit_quant_type=getattr(args, 'bnb_4bit_quant_type', 'fp4'), # can be fp4 or nf4
         )
 
-    elif args.quant_config == 'quanto':
+    elif args.quant_config == 'quanto' and args.quant_dtype_acts is None:
         # weights can be None, int2, int4, int8, float8
         # acts can be None, int8, float8
         # acts need to use quanto library directly
