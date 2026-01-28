@@ -40,12 +40,12 @@ def get_dtype_quantization_config(args):
     act_dtype = getattr(torch, args.act_dtype, None) if getattr(args, 'act_dtype', None) else torch.float32
 
     quantization_config=None
-    if args.quant_config == 'bnb' and args.quant_dtype_weights == '8bit':
+    if args.quant_config == 'bnb' and args.quant_dtype_weights == '8':
         quantization_config = BitsAndBytesConfig(
             load_in_8bit=True,
             llm_int8_threshold=getattr(args, 'bnb_int8_threshold', 6.0),
         )
-    elif args.quant_config == 'bnb' and args.quant_dtype_weights == '4bit':
+    elif args.quant_config == 'bnb' and args.quant_dtype_weights == '4':
         quantization_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_compute_dtype=act_dtype,

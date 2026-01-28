@@ -1,6 +1,3 @@
-import torch
-import wandb
-
 from qasr.misc.misc_utils import parse_args, init_procedure
 from qasr.model.model_utils import load_model_and_processor
 from qasr.model.quant_utils import quantization_calibration
@@ -20,9 +17,6 @@ def main():
 
     benchmark = make_benchmark_fn(model, processor, normalizer, model_input_name, gen_kwargs, args)
 
-    wandb.init(project=args.wandb_project, entity=args.wandb_entity, config=args)
-    wandb.run.name = f'{args.model_id}_{args.dataset}_{args.split}_{args.serial}'
-
     if args.warmup_steps:
         run_warmup(dataset, benchmark, args)
 
@@ -34,7 +28,6 @@ def main():
     results = evaluate_dataset(dataset, benchmark, args)
     compute_and_log_metrics(results, model, args)
 
-    wandb.finish()
     return 0
 
 

@@ -188,6 +188,11 @@ def load_model_and_processor(args):
             gen_kwargs['task'] = 'transcribe'
             gen_kwargs['generation_config'] = GenerationConfig.from_pretrained("openai/whisper-large-v3-turbo")
 
+        if args.quant_config == 'quanto' and args.quant_dtype_acts is not None:
+            gen_kwargs['supress_tokens'] = []
+            gen_kwargs['begin_suppress_tokens'] = []
+            gen_kwargs['forced_decoder_ids'] = None
+
 
     if args.torch_compile:
         model.forward = torch.compile(model.forward, mode=args.compile_mode, fullgraph=True)

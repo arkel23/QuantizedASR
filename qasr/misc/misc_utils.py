@@ -1,5 +1,6 @@
 import argparse
 
+import wandb
 import torch
 
 
@@ -70,4 +71,13 @@ def init_procedure(args):
     torch.cuda.reset_peak_memory_stats()
     if getattr(args, 'float32_matmul_prec', None):
         torch.set_float32_matmul_precision(args.float32_matmul_prec)
+
+    q_weights = f'_w{args.quant_dtype_weights}' if args.quant_dtype_weights else ''
+    q_acts = f'_a{args.quant_dtype_acts}' if args.quant_dtype_acts else ''
+    q_all = f'{args.quant_config}{q_weights}{q_acts}'
+    args.run_name = f'{args.model_id}{q_all}_{args.dataset}_{args.split}_{args.serial}'
+    args.run_name_legacy = f'MODEL_{args.model_id}{q_all}_DATASET_{args.dataset}_{args.split}_{args.serial}'
+    wandb.init(project=args.wandb_project, entity=args.wandb_entity, config=args)
+    wandb.run.name = args.run_name
+
     return 0
