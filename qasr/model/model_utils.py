@@ -194,6 +194,9 @@ def load_model_and_processor(args):
             # gen_kwargs['suppress_tokens'] = []
             # gen_kwargs['begin_suppress_tokens'] = []
             # gen_kwargs['forced_decoder_ids'] = None
+            # gen_kwargs.pop('language', None)
+            # gen_kwargs.pop('task', None)
+            gen_kwargs = None
             model.config.forced_decoder_ids = None
 
 
