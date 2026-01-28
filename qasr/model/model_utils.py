@@ -197,6 +197,7 @@ def load_model_and_processor(args):
             gen_kwargs.pop('language', None)
             gen_kwargs.pop('task', None)
             # gen_kwargs = {'max_new_tokens': args.max_new_tokens}
+            # gen_kwargs = {}
             model.config.forced_decoder_ids = None
 
 
