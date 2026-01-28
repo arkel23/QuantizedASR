@@ -3,9 +3,10 @@ import wandb
 
 from qasr.misc.misc_utils import parse_args, init_procedure
 from qasr.model.model_utils import load_model_and_processor
+from qasr.model.quant_utils import quantization_calibration
 from qasr.data.data_utils import load_and_prepare_dataset
 from qasr.eval.eval_utils import make_benchmark_fn, run_warmup, \
-    quantization_calibration, evaluate_dataset, compute_and_log_metrics
+    evaluate_dataset, compute_and_log_metrics
 
 
 def main():
