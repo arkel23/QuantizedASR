@@ -189,14 +189,14 @@ def load_model_and_processor(args):
             gen_kwargs['generation_config'] = GenerationConfig.from_pretrained("openai/whisper-large-v3-turbo")
 
 
-        # there is some issue with supress_token_mask 
+        # there is some issue with supress_token_mask when using quantization
         if args.quant_config == 'quanto' and args.quant_dtype_acts is not None:
             # gen_kwargs['suppress_tokens'] = []
             # gen_kwargs['begin_suppress_tokens'] = []
             # gen_kwargs['forced_decoder_ids'] = None
-            # gen_kwargs.pop('language', None)
-            # gen_kwargs.pop('task', None)
-            gen_kwargs = {}
+            gen_kwargs.pop('language', None)
+            gen_kwargs.pop('task', None)
+            # gen_kwargs = {'max_new_tokens': args.max_new_tokens}
             model.config.forced_decoder_ids = None
 
 
