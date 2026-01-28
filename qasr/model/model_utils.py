@@ -15,6 +15,7 @@ from transformers import (
     BitsAndBytesConfig,
     QuantoConfig,
     HqqConfig,
+    TorchAoConfig,
 )
 
 try:
@@ -137,20 +138,27 @@ def get_dtype_quantization_config(args):
         )
 
     elif args.quant_config == 'torchao':
+        from torchao.quantization import Int4WeightOnlyConfig, Int8WeightOnlyConfig, Float8WeightOnlyConfig
+
         # in active development, implement in future
-        # https://huggingface.co/docs/transformers/main/quantization/torchao
-        raise NotImplementedError
         # it has support for regex matching for layers for specific configs
-        # from torchao.quantization import Float8DynamicActivationFloat8WeightConfig, Float8WeightOnlyConfig
+        # https://huggingface.co/docs/transformers/main/quantization/torchao
+
         # Int8DynamicActivationInt8WeightConfig
-        quant_config = Float8DynamicActivationFloat8WeightConfig()
+        # quant_config = Float8DynamicActivationFloat8WeightConfig()
         # or float8 weight only quantization
-        quant_config = Int4WeightOnlyConfig()
-        # from torchao.quantization import Int4WeightOnlyConfig
         # from torchao.dtypes import MarlinSparseLayout
         # quant_config = Int4WeightOnlyConfig(layout=MarlinSparseLayout())
-        # quant_config = Float8WeightOnlyConfig()
-        quantization_config = TorchAoConfig(quant_type=quant_config)
+
+        if getattr(args, 'quant_dtype_weights', None) == 'int4':
+            # requires fpgemm-gpu-genai >= 1.2.0
+            quantization_config = TorchAoConfig(quant_type=Int4WeightOnlyConfig())
+        elif getattr(args, 'quant_dtype_weights', None) == 'int8':
+            quantization_config = TorchAoConfig(quant_type=Int8WeightOnlyConfig())
+        elif getattr(args, 'quant_dtype_weights', None) == 'float8':
+            quantization_config = TorchAoConfig(quant_type=Float8WeightOnlyConfig())
+        else:
+            quantization_config = TorchAoConfig()
 
     return model_dtype, quantization_config
 
