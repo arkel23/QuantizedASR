@@ -123,8 +123,8 @@ def keyword_to_dtype(k):
 def quantization_calibration(dataset, benchmark, model, args):
     # keyword_to_itype = {"none": None, "int8": qint8, "int4": qint4}[k]
 
-    weights = keyword_to_dtype(args.weights)
-    activations = keyword_to_dtype(args.activations)
+    weights = keyword_to_dtype(args.quant_dtype_weights)
+    activations = keyword_to_dtype(args.quant_dtype_acts)
 
     model = quantize(model, weights=weights, activations=activations)
 
