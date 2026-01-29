@@ -11,6 +11,12 @@ except:
 from .normalizer import EnglishTextNormalizer, BasicMultilingualTextNormalizer
 
 
+# filter data that is shorter than min_input_length or longer than
+# max_input_length
+def is_audio_in_length_range(length, min_input_length, max_input_length):
+    return length > min_input_length and length < max_input_length
+
+
 def is_target_text_in_range(ref):
     if ref.strip() == 'ignore time segment in scoring':
         return False
@@ -60,24 +66,33 @@ def load_data(args):
         streaming=args.streaming,
         token=True,
     )
-    return dataset
+
+    if 'hf-audio' in args.dataset_path or '_en' in args.dataset:
+        english = True
+
+    return dataset, english
 
 
-def prepare_data(dataset):
+def prepare_data(dataset, english):
     # Re-sample to 16kHz and normalise transcriptions
     dataset = dataset.cast_column('audio', Audio(sampling_rate=16_000))
 
-    normalizer = make_normalizer()
+    normalizer = make_normalizer(english)
     normalize = make_normalize_fn(normalizer)
+    # the map function can take num_proc to control number of workers
     dataset = dataset.map(normalize)
 
     dataset = dataset.filter(is_target_text_in_range, input_columns=['norm_text'])
+
+    # in the future may want to use this to filter out samples
+    # dataset = dataset.filter(is_audio_in_length_range, input_columns=["input_length"])
+
     return dataset, normalizer
 
 
 def load_and_prepare_dataset(args, warmup=False):
     dataset = load_data(args)
-    dataset, normalizer = prepare_data(dataset)
+    dataset, normalizer = prepare_data(dataset, args.dataset_path, args.dataset)
 
     if warmup:
         num = args.warmup_steps * args.batch_size
@@ -167,7 +182,7 @@ def preprocess_batch(batch, processor, model, model_input_name, args):
             padding=True,
         )
         inputs['audios'] = audios
-    elif not model.can_generate():
+    elif not model.can_generate() or args.long_form:
         # 1.2 Either CTC pre-processing (normalize to mean 0, std 1), or long-form Whisper processing
         inputs = processor(
             audios,

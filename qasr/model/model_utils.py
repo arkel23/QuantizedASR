@@ -178,6 +178,21 @@ def load_model_and_processor(args):
             gen_kwargs['task'] = 'transcribe'
             gen_kwargs['generation_config'] = GenerationConfig.from_pretrained(args.model_id)
 
+        if args.long_form:
+            gen_kwargs['return_timestamps'] = True
+            if 'whisper' in args.model_id:
+                gen_kwargs.update({
+                    # "max_length": 448,
+                    # "max_length": args.max_new_tokens,
+                    # "return_timestamps": True,
+                    "condition_on_prev_tokens": False,
+                    "top_k": 0,
+                    "compression_ratio_threshold": 1.35, # different compression threshold is used
+                    "temperature": (0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
+                    "logprob_threshold": -1.0,
+                    "no_speech_threshold": 0.6,
+                })
+
         # for multilingual Whisper-checkpoints we see a definitive WER boost by setting the language and task args
         if getattr(model.generation_config, 'is_multilingual', False):
             gen_kwargs['language'] = 'en'
@@ -187,7 +202,6 @@ def load_model_and_processor(args):
             gen_kwargs['language'] = 'en'
             gen_kwargs['task'] = 'transcribe'
             gen_kwargs['generation_config'] = GenerationConfig.from_pretrained("openai/whisper-large-v3-turbo")
-
 
         # there is some issue with supress_token_mask when using quantization
         if args.quant_config == 'quanto' and args.quant_dtype_acts is not None:

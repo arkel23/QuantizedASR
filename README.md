@@ -14,6 +14,85 @@ librispeech test.other
 spgispeech
 tedlium
 voxpopuli
+
+hf-audio/esb-datasets-test-only-sorted ami test
+hf-audio/esb-datasets-test-only-sorted common_voice test
+hf-audio/esb-datasets-test-only-sorted earnings22 test
+hf-audio/esb-datasets-test-only-sorted gigaspeech test
+hf-audio/esb-datasets-test-only-sorted librispeech test.clean
+hf-audio/esb-datasets-test-only-sorted librispeech test.other
+hf-audio/esb-datasets-test-only-sorted spgispeech test
+hf-audio/esb-datasets-test-only-sorted tedlium test
+hf-audio/esb-datasets-test-only-sorted voxpopuli test
+nithinraok/asr-leaderboard-datasets fleurs_bg test
+nithinraok/asr-leaderboard-datasets fleurs_cs test
+nithinraok/asr-leaderboard-datasets fleurs_da test
+nithinraok/asr-leaderboard-datasets fleurs_de test
+nithinraok/asr-leaderboard-datasets fleurs_el test
+nithinraok/asr-leaderboard-datasets fleurs_en test
+nithinraok/asr-leaderboard-datasets fleurs_es test
+nithinraok/asr-leaderboard-datasets fleurs_et test
+nithinraok/asr-leaderboard-datasets fleurs_fi test
+nithinraok/asr-leaderboard-datasets fleurs_fr test
+nithinraok/asr-leaderboard-datasets fleurs_hr test
+nithinraok/asr-leaderboard-datasets fleurs_hu test
+nithinraok/asr-leaderboard-datasets fleurs_it test
+nithinraok/asr-leaderboard-datasets fleurs_lt test
+nithinraok/asr-leaderboard-datasets fleurs_lv test
+nithinraok/asr-leaderboard-datasets fleurs_mt test
+nithinraok/asr-leaderboard-datasets fleurs_nl test
+nithinraok/asr-leaderboard-datasets fleurs_pl test
+nithinraok/asr-leaderboard-datasets fleurs_pt test
+nithinraok/asr-leaderboard-datasets fleurs_ro test
+nithinraok/asr-leaderboard-datasets fleurs_ru test
+nithinraok/asr-leaderboard-datasets fleurs_sk test
+nithinraok/asr-leaderboard-datasets fleurs_sl test
+nithinraok/asr-leaderboard-datasets fleurs_sv test
+nithinraok/asr-leaderboard-datasets fleurs_uk test
+nithinraok/asr-leaderboard-datasets mcv_de test
+nithinraok/asr-leaderboard-datasets mcv_en test
+nithinraok/asr-leaderboard-datasets mcv_es test
+nithinraok/asr-leaderboard-datasets mcv_et test
+nithinraok/asr-leaderboard-datasets mcv_fr test
+nithinraok/asr-leaderboard-datasets mcv_it test
+nithinraok/asr-leaderboard-datasets mcv_lv test
+nithinraok/asr-leaderboard-datasets mcv_nl test
+nithinraok/asr-leaderboard-datasets mcv_pt test
+nithinraok/asr-leaderboard-datasets mcv_ru test
+nithinraok/asr-leaderboard-datasets mcv_sl test
+nithinraok/asr-leaderboard-datasets mcv_sv test
+nithinraok/asr-leaderboard-datasets mcv_uk test
+nithinraok/asr-leaderboard-datasets mls_es test
+nithinraok/asr-leaderboard-datasets mls_fr test
+nithinraok/asr-leaderboard-datasets mls_it test
+nithinraok/asr-leaderboard-datasets mls_nl test
+nithinraok/asr-leaderboard-datasets mls_pl test
+nithinraok/asr-leaderboard-datasets mls_pt test
+hf-audio/asr-leaderboard-longform earnings21 test
+hf-audio/asr-leaderboard-longform earnings22 test
+hf-audio/asr-leaderboard-longform tedlium test
+distil-whisper/meanwhile default test
+distil-whisper/rev16 whisper_subset test
+
+distil-whisper/earnings22 chunked test
+
+
+
+from datasets import load_dataset, get_dataset_split_names, get_dataset_config_names
+ds_repos = ['hf-audio/esb-datasets-test-only-sorted', 'nithinraok/asr-leaderboard-datasets', 'hf-audio/asr-leaderboard-longform', 'distil-whisper/meanwhile', 'distil-whisper/rev16']
+ds_repos = ['AISHELL/AISHELL-1', 'AISHELL/AISHELL-3', 'AISHELL/AISHELL-4', 'adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-zhtw', 'adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-en', 'adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien', 'adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka']
+combs = []
+for ds in ds_repos:
+    cfgs = get_dataset_config_names(ds)
+    for cfg in cfgs:
+        splits = get_dataset_split_names(ds, cfg)
+        for split in splits:
+            print(ds, cfg, split)
+            combs.append({'ds': ds, 'cfg': cfg, 'split': split})
+            # dataset = load_dataset(ds, cfg, split=split, streaming=True, token=True)
+            # print(next(iter(dataset)))
+
+
 ```
 
 Tried models:

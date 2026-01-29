@@ -9,6 +9,10 @@ def parse_args():
     parser.add_argument('--serial', type=int, default=0)
     parser.add_argument('--device', type=int, default=0)
 
+    parser.add_argument('--force_asr_language', type=str, default=None)
+    parser.add_argument('--long_form', action='store_true',
+                        help='no truncation and return_attention_mask for whisper > 30 s')
+
     parser.add_argument('--model_id', type=str, default='openai/whisper-tiny.en')
     parser.add_argument('--max_new_tokens', type=int, default=None,
                          help='Max num of tokens to generate')
@@ -16,7 +20,6 @@ def parse_args():
                          help='Max num of tokens to generate')
     parser.add_argument('--model_dtype', type=str, default='float16',
                         choices=['auto', 'bfloat16', 'float16', 'float32'])
-    parser.add_argument('--force_asr_language', type=str, default=None)
 
     parser.add_argument('--quant_config', type=str, default=None,
                         choices=['bnb', 'quanto', 'hqq', 'torchao'])

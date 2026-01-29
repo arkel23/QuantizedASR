@@ -320,10 +320,6 @@ def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
                     return logits.argmax(-1)
 
 
-# ================================
-# Benchmark function (HF map)
-# ================================
-
 def make_benchmark_fn(model, processor, normalizer, model_input_name, gen_kwargs, args):
     def benchmark(batch, min_new_tokens=None):
         start = time.time()
