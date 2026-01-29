@@ -12,6 +12,8 @@ def parse_args():
     parser.add_argument('--force_asr_language', type=str, default=None)
     parser.add_argument('--long_form', action='store_true',
                         help='no truncation and return_attention_mask for whisper > 30 s')
+    parser.add_argument('--long_form_tricks', action='store_true',
+                        help='from hf https://github.com/huggingface/transformers/pull/27658')
 
     parser.add_argument('--model_id', type=str, default='openai/whisper-tiny.en')
     parser.add_argument('--max_new_tokens', type=int, default=None,
@@ -77,7 +79,8 @@ def init_procedure(args):
 
     q_weights = f'_w{args.quant_dtype_weights}' if args.quant_dtype_weights else ''
     q_acts = f'_a{args.quant_dtype_acts}' if args.quant_dtype_acts else ''
-    q_all = f'{args.quant_config}{q_weights}{q_acts}'
+    q_config = f'_{args.quant_config}' if args.quant_config else ''
+    q_all = f'{q_config}{q_weights}{q_acts}'
     args.run_name = f'{args.model_id}{q_all}_{args.dataset}_{args.split}_{args.serial}'
     args.run_name_legacy = f'MODEL_{args.model_id}{q_all}_DATASET_{args.dataset}_{args.split}_{args.serial}'
     wandb.init(project=args.wandb_project, entity=args.wandb_entity, config=args)

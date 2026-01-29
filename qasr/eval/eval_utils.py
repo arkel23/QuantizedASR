@@ -324,7 +324,7 @@ def make_benchmark_fn(model, processor, normalizer, model_input_name, gen_kwargs
     def benchmark(batch, min_new_tokens=None):
         start = time.time()
 
-        inputs, padding_size, minibatch_size = preprocess_batch(
+        inputs, padding_size, minibatch_size, audio_lengths_s = preprocess_batch(
             batch, processor, model, model_input_name, args
         )
 
@@ -336,6 +336,9 @@ def make_benchmark_fn(model, processor, normalizer, model_input_name, gen_kwargs
         batch['predictions'] = preds
         batch['references'] = batch['norm_text']
         batch['transcription_time_s'] = minibatch_size * [runtime / minibatch_size]
+        batch['audio_length_s'] = audio_lengths_s
+        # print(preds, minibatch_size, runtime, audio_lengths_s, batch['audio_length_s'])
+        # batch['audio_length_s'] = 30
 
         return batch
 

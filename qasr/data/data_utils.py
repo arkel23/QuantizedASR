@@ -58,16 +58,24 @@ def make_normalize_fn(normalizer):
     return normalize
 
 
-def load_data(args):
+def load_data(
+        dataset_path='hf-audio/esb-datasets-test-only',
+        dataset_config='tedlium',
+        split='test',
+        streaming=True
+        ):
     dataset = load_dataset(
-        args.dataset_path,
-        args.dataset,
-        split=args.split,
-        streaming=args.streaming,
+        dataset_path,
+        dataset_config,
+        split=split,
+        streaming=streaming,
         token=True,
     )
 
-    if 'hf-audio' in args.dataset_path or '_en' in args.dataset:
+    # filter based on language
+    # dataset = dataset.filter(is_audio_in_length_range, input_columns=['language'])
+
+    if 'hf-audio' in dataset_path or '_en' in dataset:
         english = True
 
     return dataset, english
@@ -85,14 +93,14 @@ def prepare_data(dataset, english):
     dataset = dataset.filter(is_target_text_in_range, input_columns=['norm_text'])
 
     # in the future may want to use this to filter out samples
-    # dataset = dataset.filter(is_audio_in_length_range, input_columns=["input_length"])
+    # dataset = dataset.filter(is_audio_in_length_range, input_columns=['input_length'])
 
     return dataset, normalizer
 
 
 def load_and_prepare_dataset(args, warmup=False):
-    dataset = load_data(args)
-    dataset, normalizer = prepare_data(dataset, args.dataset_path, args.dataset)
+    dataset, english = load_data(args.dataset_path, args.dataset, args.split, args.streaming)
+    dataset, normalizer = prepare_data(dataset, english)
 
     if warmup:
         num = args.warmup_steps * args.batch_size
@@ -120,6 +128,10 @@ def load_and_prepare_dataset(args, warmup=False):
 def preprocess_batch(batch, processor, model, model_input_name, args):
     audios = [a['array'] for a in batch['audio']]
     minibatch_size = len(audios)
+
+    # this assumes sampling rate is 16 kHz, if different then need flag
+    ds_sampling_rate = getattr(args, 'ds_sampling_rate', 16_000)
+    audio_lengths = [a.shape[0] / ds_sampling_rate for a in audios]
 
     # 1.1 Pad audios to max batch size if using torch compile to prevent re-compilations
     padding_size = None
@@ -210,7 +222,7 @@ def preprocess_batch(batch, processor, model, model_input_name, args):
     else:
         inputs[model_input_name] = inputs[model_input_name].to(dtype)
 
-    return inputs, padding_size, minibatch_size
+    return inputs, padding_size, minibatch_size, audio_lengths
 
 
 # ================================
@@ -228,7 +240,7 @@ def postprocess_predictions(pred_ids, padding_size, inputs, processor, normalize
     # phi4
     if type(processor) == Phi4Processor:
         # Gather the sequence index of the stop token
-        stop_tokens_idx = gen_kwargs["stopping_criteria"][0].stop_tokens_idx.reshape(inputs.input_ids.shape[0], -1)[:, 0]
+        stop_tokens_idx = gen_kwargs['stopping_criteria'][0].stop_tokens_idx.reshape(inputs.input_ids.shape[0], -1)[:, 0]
 
         # If a stop token was produced, we need to remove its length from the found index,
         # however there might be a chance that the stop token was not produced and the index
@@ -241,7 +253,7 @@ def postprocess_predictions(pred_ids, padding_size, inputs, processor, normalize
 
         # Convert token ids to text transcription
         pred_text = [
-            processor.decode(_pred_ids[inputs["input_ids"].shape[1] : _stop_tokens_idx], skip_special_tokens=True, clean_up_tokenization_spaces=False)
+            processor.decode(_pred_ids[inputs['input_ids'].shape[1] : _stop_tokens_idx], skip_special_tokens=True, clean_up_tokenization_spaces=False)
             for _pred_ids, _stop_tokens_idx in zip(pred_ids, stop_tokens_idx)
         ]
     '''
