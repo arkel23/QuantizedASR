@@ -35,6 +35,26 @@ def get_text(sample):
         return sample['transcript']
     elif 'transcription' in sample:
         return sample['transcription']
+    elif 'txt' in sample:
+        return sample['txt']
+    elif 'label' in sample:
+        return sample['label']
+    elif 'Digit' in sample:
+        return sample['Digit']
+    elif 'Text' in sample:
+        return sample['Text']
+    elif 'sentence' in sample:
+        return sample['sentence']
+    elif 'question_text' in sample:
+        return sample['question_text']
+    elif 'Questions' in sample:
+        return sample['Questions']
+    elif 'instruction' in sample:
+        return sample['instruction']
+    elif 'question' in sample:
+        return sample['question']
+    elif 'meta_info' in sample:
+        return sample['meta_info']
     else:
         raise ValueError(
             f"Expected transcript column of either 'text', 'sentence', 'normalized_text' or 'transcript'. Got sample of "
@@ -45,6 +65,13 @@ def get_text(sample):
 def make_normalizer(english=True):
     if english:
         normalizer = EnglishTextNormalizer()
+    # if chinese hokkien need to decide if chinese characters or pinyin
+    # eg 我沒咧驚（gu? b? leh kian)
+    # if hsk2/3/4/5 need to remove the "女：", "男：", "问：" from 'text' fields
+    # if hsk6 need to eliminate the punctuation such as "样子。”" in the text
+
+    # for air-chat need to concatenate "transcription" key from a list of dictionaries
+    # {'meta_info': '[{"speaker": "speaker 1", "speaking time": "(0.00,13.39)", "transcription": "so it\'s a lot more than the like two thousand dollar computers that like you or i can afford you know [laughter] so ah they so they put a lot of effort and this is the kind of stuff that gets sold to the government"}, {"speaker": "speaker 2", "speaking time": "(5.33,6.88)", "transcription": "right right"}, {"speaker": "speaker 2", "speaking time": "(13.01,13.91)", "transcription": "mhm"}, {"speaker": "speaker 1", "speaking time": "(13.30,20.20)", "transcription": "and that\'s why and our government has a massive sum of money and that\'s why i"}, {"speaker": "speaker 2", "speaking time": "(19.29,21.60)", "transcription": "isn\'t it amazing how it has"}, {"speaker": "speaker 1", "speaking time": "(21.30,26.59)", "transcription": "i mean they they ah how what\'s the national debt six trillion plus"}, {"speaker": "speaker 2", "speaking time": "(25.88,28.08)", "transcription": "[laughter]"}]'
     else:
         normalizer = BasicMultilingualTextNormalizer()
     return normalizer

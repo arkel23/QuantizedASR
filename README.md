@@ -4,17 +4,8 @@
 python -m tools.evaluate --model_id openai/whisper-tiny.en --dataset librispeech --split test.clean
 ```
 
-Tried datasets (all `--split test` except except librispeech): 
+Tried datasets: 
 ```
-ami
-earnings22
-gigaspeech
-librispeech test.clean
-librispeech test.other
-spgispeech
-tedlium
-voxpopuli
-
 hf-audio/esb-datasets-test-only-sorted ami test
 hf-audio/esb-datasets-test-only-sorted common_voice test
 hf-audio/esb-datasets-test-only-sorted earnings22 test
@@ -24,6 +15,56 @@ hf-audio/esb-datasets-test-only-sorted librispeech test.other
 hf-audio/esb-datasets-test-only-sorted spgispeech test
 hf-audio/esb-datasets-test-only-sorted tedlium test
 hf-audio/esb-datasets-test-only-sorted voxpopuli test
+
+TwinkStart/peoples_speech default test
+TwinkStart/audio-MNIST default test
+TwinkStart/librispeech default dev_clean
+TwinkStart/librispeech default dev_other
+TwinkStart/librispeech default test_clean
+TwinkStart/librispeech default test_other
+TwinkStart/tedlium default test
+TwinkStart/tedlium release1 test
+TwinkStart/tedlium release2 test
+TwinkStart/tedlium release3 test
+
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-en default train
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-en default test
+
+
+TwinkStart/AISHELL-1 default test
+TwinkStart/kespeech default test
+TwinkStart/WenetSpeech default test_meeting
+TwinkStart/WenetSpeech default test_net
+
+JacobLinCool/common_voice_19_0_zh-TW default validated_without_test
+JacobLinCool/common_voice_19_0_zh-TW default test
+
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-zhtw default train
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-zhtw default test
+
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien default train
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien default test
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka default train
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka default test
+
+
+TwinkStart/speech-CMMLU default train
+TwinkStart/speech-HSK default hsk1
+TwinkStart/speech-HSK default hsk2
+TwinkStart/speech-HSK default hsk3
+TwinkStart/speech-HSK default hsk4
+TwinkStart/speech-HSK default hsk5
+TwinkStart/speech-HSK default hsk6
+TwinkStart/llama-questions default test
+TwinkStart/speech-chatbot-alpaca-eval default test
+TwinkStart/speech-web-questions default test
+TwinkStart/speech-triavia-qa default test
+TwinkStart/air-chat default test
+
+# not suitable for ASR
+TwinkStart/MMAU default v05.15.25
+
+
 nithinraok/asr-leaderboard-datasets fleurs_bg test
 nithinraok/asr-leaderboard-datasets fleurs_cs test
 nithinraok/asr-leaderboard-datasets fleurs_da test
@@ -49,6 +90,7 @@ nithinraok/asr-leaderboard-datasets fleurs_sk test
 nithinraok/asr-leaderboard-datasets fleurs_sl test
 nithinraok/asr-leaderboard-datasets fleurs_sv test
 nithinraok/asr-leaderboard-datasets fleurs_uk test
+
 nithinraok/asr-leaderboard-datasets mcv_de test
 nithinraok/asr-leaderboard-datasets mcv_en test
 nithinraok/asr-leaderboard-datasets mcv_es test
@@ -68,31 +110,37 @@ nithinraok/asr-leaderboard-datasets mls_it test
 nithinraok/asr-leaderboard-datasets mls_nl test
 nithinraok/asr-leaderboard-datasets mls_pl test
 nithinraok/asr-leaderboard-datasets mls_pt test
+
+TwinkStart/CommonVoice_15 default en
+TwinkStart/CommonVoice_15 default fr
+TwinkStart/CommonVoice_15 default yue
+TwinkStart/CommonVoice_15 default zh
+
+TwinkStart/facebook_multilingual_librispeech default mls_dutch
+TwinkStart/facebook_multilingual_librispeech default mls_french
+TwinkStart/facebook_multilingual_librispeech default mls_german
+TwinkStart/facebook_multilingual_librispeech default mls_italian
+TwinkStart/facebook_multilingual_librispeech default mls_polish
+TwinkStart/facebook_multilingual_librispeech default mls_portuguese
+TwinkStart/facebook_multilingual_librispeech default mls_spanish
+
+OmniAICreator/ASMR-Archive-Processed default train
+
+speechcolab/gigaspeech2 default train
+
+espnet/floras monolingual train
+espnet/floras monolingual dev
+espnet/floras monolingual test
+espnet/floras multilingual dev
+espnet/floras multilingual test
+
 hf-audio/asr-leaderboard-longform earnings21 test
 hf-audio/asr-leaderboard-longform earnings22 test
 hf-audio/asr-leaderboard-longform tedlium test
+
 distil-whisper/meanwhile default test
+distil-whisper/rev16 full test
 distil-whisper/rev16 whisper_subset test
-
-distil-whisper/earnings22 chunked test
-
-
-
-from datasets import load_dataset, get_dataset_split_names, get_dataset_config_names
-ds_repos = ['hf-audio/esb-datasets-test-only-sorted', 'nithinraok/asr-leaderboard-datasets', 'hf-audio/asr-leaderboard-longform', 'distil-whisper/meanwhile', 'distil-whisper/rev16']
-ds_repos = ['AISHELL/AISHELL-1', 'AISHELL/AISHELL-3', 'AISHELL/AISHELL-4', 'adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-zhtw', 'adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-en', 'adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien', 'adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka']
-combs = []
-for ds in ds_repos:
-    cfgs = get_dataset_config_names(ds)
-    for cfg in cfgs:
-        splits = get_dataset_split_names(ds, cfg)
-        for split in splits:
-            print(ds, cfg, split)
-            combs.append({'ds': ds, 'cfg': cfg, 'split': split})
-            # dataset = load_dataset(ds, cfg, split=split, streaming=True, token=True)
-            # print(next(iter(dataset)))
-
-
 ```
 
 Tried models:

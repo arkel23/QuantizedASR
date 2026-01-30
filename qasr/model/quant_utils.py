@@ -84,7 +84,7 @@ def get_dtype_quantization_config(args):
 
         # it has support for regex matching for layers for specific configs
         # set default to int4 (for linears), and skip quantizing `model.layers.0.self_attn.q_proj`
-        # quant_config = FqnToConfig({"_default": config, "model.layers.0.self_attn.q_proj": None})
+        # quant_config = FqnToConfig({'_default': config, 'model.layers.0.self_attn.q_proj': None})
 
         # from torchao.dtypes import MarlinSparseLayout
         # quant_config = Int4WeightOnlyConfig(layout=MarlinSparseLayout())
@@ -111,24 +111,24 @@ def get_dtype_quantization_config(args):
 
 def keyword_to_dtype(k):
     kw_dtype_dic = {
-        "none": None,
-        "int2": qint2,
-        "int4": qint4,
-        "int8": qint8,
-        "float8": qfloat8,
+        'none': None,
+        'int2': qint2,
+        'int4': qint4,
+        'int8': qint8,
+        'float8': qfloat8,
     }
     return kw_dtype_dic.get(k, None)
 
 
 def quantization_calibration(dataset, benchmark, model, args):
-    # keyword_to_itype = {"none": None, "int8": qint8, "int4": qint4}[k]
+    # keyword_to_itype = {'none': None, 'int8': qint8, 'int4': qint4}[k]
 
     weights = keyword_to_dtype(args.quant_dtype_weights)
     activations = keyword_to_dtype(args.quant_dtype_acts)
 
     quantize(model, weights=weights, activations=activations)
 
-    print("Calibrating ...")
+    print('Calibrating ...')
     with Calibration():
         dataset = iter(
             dataset.map(

@@ -16,16 +16,16 @@ from qasr.data.data_utils import preprocess_batch, postprocess_predictions
 
 class MultipleTokenBatchStoppingCriteria(StoppingCriteria):
     # https://github.com/huggingface/open_asr_leaderboard/blob/main/phi/run_eval.py
-    """Stopping criteria capable of receiving multiple stop-tokens and handling batched inputs."""
+    '''Stopping criteria capable of receiving multiple stop-tokens and handling batched inputs.'''
 
     def __init__(self, stop_tokens: torch.LongTensor, batch_size: int = 1) -> None:
-        """Initialize the multiple token batch stopping criteria.
+        '''Initialize the multiple token batch stopping criteria.
 
         Args:
             stop_tokens: Stop-tokens.
             batch_size: Batch size.
 
-        """
+        '''
 
         self.stop_tokens = stop_tokens
         self.max_stop_tokens = stop_tokens.shape[-1]

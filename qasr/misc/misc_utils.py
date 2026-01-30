@@ -61,7 +61,7 @@ def parse_args():
     parser.set_defaults(streaming=True)
     args = parser.parse_args()
 
-    args.device = f"cuda:{args.device}" if args.device != -1 else "cpu"
+    args.device = f'cuda:{args.device}' if args.device != -1 else 'cpu'
 
     if any([model_family in args.model_id for model_family in ['Voxtral', 'Qwen', 'granite', 'flamingo']]) and args.max_new_tokens is None:
         args.max_new_tokens = 200
@@ -81,8 +81,12 @@ def init_procedure(args):
     q_acts = f'_a{args.quant_dtype_acts}' if args.quant_dtype_acts else ''
     q_config = f'_{args.quant_config}' if args.quant_config else ''
     q_all = f'{q_config}{q_weights}{q_acts}'
-    args.run_name = f'{args.model_id}{q_all}_{args.dataset}_{args.split}_{args.serial}'
-    args.run_name_legacy = f'MODEL_{args.model_id}{q_all}_DATASET_{args.dataset}_{args.split}_{args.serial}'
+
+    ds = f'{args.dataset_path}_{args.dataset}_{args.split}'
+
+    args.run_name = f'{args.model_id}{q_all}_{ds}_{args.split}_{args.serial}'
+    args.run_name_legacy = f'MODEL_{args.model_id}{q_all}_DATASET_{ds}_{args.serial}'
+
     wandb.init(project=args.wandb_project, entity=args.wandb_entity, config=args)
     wandb.run.name = args.run_name
 

@@ -1,4 +1,5 @@
 import torch
+from iso639 import Lang
 
 from transformers import (
     AutoConfig,
@@ -23,16 +24,21 @@ except:
 
 
 def add_transcription_prompt_to_processor(processor, model_id, language='en'):
+    try:
+        language_fn = Lang(language).name
+    except:
+        language_fn = language
+
     if 'granite' in model_id:
         # create text prompt
         chat = [
             {
-                "role": "system",
-                "content": "Knowledge Cutoff Date: April 2024.\nToday's Date: December 19, 2024.\nYou are Granite, developed by IBM. You are a helpful AI assistant",
+                'role': 'system',
+                'content': "Knowledge Cutoff Date: April 2024.\nToday's Date: December 19, 2024.\nYou are Granite, developed by IBM. You are a helpful AI assistant",
             },
             {
-                "role": "user",
-                "content": "<|audio|>can you transcribe the speech into a written format?",
+                'role': 'user',
+                'content': '<|audio|>can you transcribe the speech into a written format?',
             }
         ]
 
@@ -44,19 +50,19 @@ def add_transcription_prompt_to_processor(processor, model_id, language='en'):
     elif 'Qwen2-Audio' in model_id:
         # https://huggingface.co/Qwen/Qwen2-Audio-7B
         # https://github.com/QwenLM/Qwen2-Audio/blob/main/eval_audio/evaluate_asr.py
-        # prompt = "<|audio_bos|><|AUDIO|><|audio_eos|>Generate the caption in English:"
-        prompt = f"<|audio_bos|><|AUDIO|><|audio_eos|>Detect the language and recognize the speech: <|{language}|>"
+        # prompt = '<|audio_bos|><|AUDIO|><|audio_eos|>Generate the caption in English:'
+        prompt = f'<|audio_bos|><|AUDIO|><|audio_eos|>Detect the language and recognize the speech: <|{language}|>'
         processor.prompt_asr = prompt
 
     elif 'Qwen2.5-Omni' in model_id:
         # https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/universal_audio_understanding.ipynb
-        prompt = "Transcribe the English audio into text without any punctuation marks."
+        prompt = f'Transcribe the {language_fn} audio into text without any punctuation marks.'
         system_prompt='You are a speech recognition model.'
         messages = [
-            {"role": "system", "content": [{"type": "text", "text": system_prompt}]},
-            {"role": "user", "content": [
-                    {"type": "audio", "audio": "audio_to_transcribe.wav"},
-                    {"type": "text", "text": prompt},
+            {'role': 'system', 'content': [{'type': 'text', 'text': system_prompt}]},
+            {'role': 'user', 'content': [
+                    {'type': 'audio', 'audio': 'audio_to_transcribe.wav'},
+                    {'type': 'text', 'text': prompt},
                 ]
             },
         ]
@@ -65,17 +71,17 @@ def add_transcription_prompt_to_processor(processor, model_id, language='en'):
         processor.prompt_asr = text
 
     elif 'Phi4' in model_id:
-        user = "<|user|>"
-        assistant = "<|assistant|>"
-        prompt_suffix = "<|end|>"
-        user_prompt = "Transcribe the audio clip into text."
+        user = '<|user|>'
+        assistant = '<|assistant|>'
+        prompt_suffix = '<|end|>'
+        user_prompt = 'Transcribe the audio clip into text.'
 
-        prompt = f"{user}<|audio_1|>{user_prompt}{prompt_suffix}{assistant}"
+        prompt = f'{user}<|audio_1|>{user_prompt}{prompt_suffix}{assistant}'
 
         processor.prompt_asr = prompt
 
         stop_tokens = [prompt_suffix, processor.tokenizer.eos_token]
-        stop_tokens_ids = processor.tokenizer(stop_tokens, add_special_tokens=False, padding="longest", return_tensors="pt")["input_ids"]
+        stop_tokens_ids = processor.tokenizer(stop_tokens, add_special_tokens=False, padding='longest', return_tensors='pt')['input_ids']
 
         processor.stop_tokens_ids = stop_tokens_ids
 
@@ -183,15 +189,15 @@ def load_model_and_processor(args):
 
             if args.long_form_tricks:
                 gen_kwargs.update({
-                    # "max_length": 448,
-                    # "max_length": args.max_new_tokens,
-                    # "return_timestamps": True,
-                    "condition_on_prev_tokens": False,
-                    # "top_k": 0,
-                    "compression_ratio_threshold": 1.35, # different compression threshold is used
-                    "temperature": (0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
-                    "logprob_threshold": -1.0,
-                    "no_speech_threshold": 0.6,
+                    # 'max_length': 448,
+                    # 'max_length': args.max_new_tokens,
+                    # 'return_timestamps': True,
+                    'condition_on_prev_tokens': False,
+                    # 'top_k': 0,
+                    'compression_ratio_threshold': 1.35, # different compression threshold is used
+                    'temperature': (0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
+                    'logprob_threshold': -1.0,
+                    'no_speech_threshold': 0.6,
                 })
 
         # for multilingual Whisper-checkpoints we see a definitive WER boost by setting the language and task args
@@ -200,9 +206,9 @@ def load_model_and_processor(args):
             gen_kwargs['task'] = 'transcribe'
 
         if 'lite-whisper' in args.model_id:
-            gen_kwargs['language'] = 'en'
+            gen_kwargs['language'] = 'en' if not args.force_asr_language else args.force_asr_language
             gen_kwargs['task'] = 'transcribe'
-            gen_kwargs['generation_config'] = GenerationConfig.from_pretrained("openai/whisper-large-v3-turbo")
+            gen_kwargs['generation_config'] = GenerationConfig.from_pretrained('openai/whisper-large-v3-turbo')
 
         # there is some issue with supress_token_mask when using quantization
         if args.quant_config == 'quanto' and args.quant_dtype_acts is not None:
