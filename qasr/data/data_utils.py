@@ -81,6 +81,9 @@ def make_normalize_fn(normalizer):
     def normalize(batch):
         batch['original_text'] = get_text(batch)
         batch['norm_text'] = normalizer(batch['original_text'])
+
+        # do something like this but for the audio
+
         return batch
     return normalize
 
@@ -109,6 +112,9 @@ def load_data(
 
 
 def prepare_data(dataset, english):
+    # may need to coordinate with the audio_lengths function in preprocess_batch
+    # also convert to a uniform format and may need to process from multichannel to single
+
     # Re-sample to 16kHz and normalise transcriptions
     dataset = dataset.cast_column('audio', Audio(sampling_rate=16_000))
 
