@@ -86,7 +86,7 @@ def init_procedure(args):
 
     ds = f'{args.dataset_path}_{args.dataset}_{args.split}'
 
-    args.run_name = f'{args.model_id}{q_all}_{ds}_{args.split}_{args.serial}'
+    args.run_name = f'{args.model_id}{q_all}_{ds}_{args.serial}'
     args.run_name_legacy = f'MODEL_{args.model_id}{q_all}_DATASET_{ds}_{args.serial}'
 
     wandb.init(project=args.wandb_project, entity=args.wandb_entity, config=args)
