@@ -6,6 +6,7 @@ python -m tools.evaluate --model_id openai/whisper-tiny.en --dataset librispeech
 
 Tried datasets: 
 ```
+# english short form
 hf-audio/esb-datasets-test-only-sorted ami test
 hf-audio/esb-datasets-test-only-sorted common_voice test
 hf-audio/esb-datasets-test-only-sorted earnings22 test
@@ -30,11 +31,27 @@ TwinkStart/tedlium release3 test
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-en default train
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-en default test
 
+TwinkStart/llama-questions default test
+TwinkStart/speech-chatbot-alpaca-eval default test
+TwinkStart/speech-web-questions default test
+TwinkStart/speech-triavia-qa default test
+TwinkStart/air-chat default test
+
+
 
 TwinkStart/AISHELL-1 default test
 TwinkStart/kespeech default test
 TwinkStart/WenetSpeech default test_meeting
 TwinkStart/WenetSpeech default test_net
+
+TwinkStart/speech-CMMLU default train
+TwinkStart/speech-HSK default hsk1
+TwinkStart/speech-HSK default hsk2
+TwinkStart/speech-HSK default hsk3
+TwinkStart/speech-HSK default hsk4
+TwinkStart/speech-HSK default hsk5
+TwinkStart/speech-HSK default hsk6
+
 
 JacobLinCool/common_voice_19_0_zh-TW default validated_without_test
 JacobLinCool/common_voice_19_0_zh-TW default test
@@ -48,21 +65,6 @@ adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka default train
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka default test
 
 
-TwinkStart/speech-CMMLU default train
-TwinkStart/speech-HSK default hsk1
-TwinkStart/speech-HSK default hsk2
-TwinkStart/speech-HSK default hsk3
-TwinkStart/speech-HSK default hsk4
-TwinkStart/speech-HSK default hsk5
-TwinkStart/speech-HSK default hsk6
-TwinkStart/llama-questions default test
-TwinkStart/speech-chatbot-alpaca-eval default test
-TwinkStart/speech-web-questions default test
-TwinkStart/speech-triavia-qa default test
-TwinkStart/air-chat default test
-
-# not suitable for ASR
-TwinkStart/MMAU default v05.15.25
 
 
 nithinraok/asr-leaderboard-datasets fleurs_bg test
@@ -104,6 +106,7 @@ nithinraok/asr-leaderboard-datasets mcv_ru test
 nithinraok/asr-leaderboard-datasets mcv_sl test
 nithinraok/asr-leaderboard-datasets mcv_sv test
 nithinraok/asr-leaderboard-datasets mcv_uk test
+
 nithinraok/asr-leaderboard-datasets mls_es test
 nithinraok/asr-leaderboard-datasets mls_fr test
 nithinraok/asr-leaderboard-datasets mls_it test
@@ -113,6 +116,7 @@ nithinraok/asr-leaderboard-datasets mls_pt test
 
 TwinkStart/CommonVoice_15 default en
 TwinkStart/CommonVoice_15 default fr
+
 TwinkStart/CommonVoice_15 default yue
 TwinkStart/CommonVoice_15 default zh
 
@@ -126,7 +130,6 @@ TwinkStart/facebook_multilingual_librispeech default mls_spanish
 
 OmniAICreator/ASMR-Archive-Processed default train
 
-speechcolab/gigaspeech2 default train
 
 espnet/floras monolingual train
 espnet/floras monolingual dev
@@ -141,6 +144,15 @@ hf-audio/asr-leaderboard-longform tedlium test
 distil-whisper/meanwhile default test
 distil-whisper/rev16 full test
 distil-whisper/rev16 whisper_subset test
+distil_whisper/tedlium-long-form default validation
+
+
+# not suitable for ASR
+TwinkStart/MMAU default v05.15.25
+
+# needs additional preprocessing, also not compatible with streaming
+speechcolab/gigaspeech2 default train
+
 ```
 
 Tried models:

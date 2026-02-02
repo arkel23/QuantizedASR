@@ -11,6 +11,15 @@ except:
 from .normalizer import EnglishTextNormalizer, BasicMultilingualTextNormalizer
 
 
+def prepare_filter_language(target_language='en'):
+    target_language = 'eng' if target_language == 'en' else target_language
+
+    def is_language(language):
+        return language == target_language
+
+    return is_language
+
+
 # filter data that is shorter than min_input_length or longer than
 # max_input_length
 def is_audio_in_length_range(length, min_input_length, max_input_length):
@@ -94,21 +103,34 @@ def load_data(
         split='test',
         streaming=True
         ):
-    dataset = load_dataset(
-        dataset_path,
-        dataset_config,
-        split=split,
-        streaming=streaming,
-        token=True,
-    )
 
     # filter based on language for floras
-    # dataset = dataset.filter(is_audio_in_length_range, input_columns=['language'])
+    if 'floras' in dataset_path and 'multilingual' in dataset_config:
+        dataset = load_dataset(
+            dataset_path,
+            'multilingual',
+            split=split,
+            streaming=streaming,
+            token=True,
+        )
 
-    if 'hf-audio' in dataset_path or '_en' in dataset_config or split == 'en':
+        is_language = prepare_filter_language(target_language=dataset_config.split('_')[-1])
+        dataset = dataset.filter(is_language, input_columns=['language'])
+
+    else:
+        dataset = load_dataset(
+            dataset_path,
+            dataset_config,
+            split=split,
+            streaming=streaming,
+            token=True,
+        )
+
+    if 'hf-audio' in dataset_path or '_en' in dataset_config or dataset_config == 'monolingual' or split == 'en':
         english = True
     else:
         english = False
+
     print(dataset_path, dataset, 'english dataset: ', english)
 
     return dataset, english
