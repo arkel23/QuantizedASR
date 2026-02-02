@@ -73,7 +73,9 @@ def parse_args():
 
 
 def init_procedure(args):
-    torch.cuda.reset_peak_memory_stats()
+    if torch.cuda.is_available():
+        torch.cuda.reset_peak_memory_stats()
+
     if getattr(args, 'float32_matmul_prec', None):
         torch.set_float32_matmul_precision(args.float32_matmul_prec)
 

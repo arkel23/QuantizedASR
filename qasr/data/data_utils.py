@@ -32,6 +32,21 @@ def is_target_text_in_range(ref):
     else:
         return ref.strip() != ''
 
+def get_audio(sample):
+    if 'audio' in sample:
+        return sample['audio']
+    # adi-gov-tw
+    elif 'mp3' in sample:
+        return sample.pop('mp3')
+    # asr
+    elif 'flac' in sample:
+        return sample.pop('flac')
+    else:
+        raise ValueError(
+            f"Expected transcript column of either 'audio', or 'mp3'. Got sample of "
+            ".join{sample.keys()}. Ensure a audio column name is present in the dataset."
+        )
+
 
 def get_text(sample):
     if 'text' in sample:
@@ -91,7 +106,7 @@ def make_normalize_fn(normalizer):
         batch['original_text'] = get_text(batch)
         batch['norm_text'] = normalizer(batch['original_text'])
 
-        # do something like this but for the audio
+        batch['audio'] = get_audio(batch)
 
         return batch
     return normalize
