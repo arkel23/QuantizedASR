@@ -228,5 +228,7 @@ def load_model_and_processor(args):
             # enable static k/v cache for autoregressive models
             model.generation_config.cache_implementation = 'static'
 
+    print(model)
+    print(f'Loaded model: {args.model_id}')
 
     return model, processor, model_input_name, gen_kwargs

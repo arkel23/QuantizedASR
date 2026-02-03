@@ -40,26 +40,32 @@ def get_dtype_quantization_config(args):
     act_dtype = getattr(torch, args.act_dtype, None) if getattr(args, 'act_dtype', None) else torch.float32
 
     quantization_config=None
-    if args.quant_config == 'bnb' and args.quant_dtype_weights == '8':
-        quantization_config = BitsAndBytesConfig(
-            load_in_8bit=True,
-            llm_int8_threshold=getattr(args, 'bnb_int8_threshold', 6.0),
-        )
-    elif args.quant_config == 'bnb' and args.quant_dtype_weights == '4':
-        quantization_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=act_dtype,
-            bnb_4bit_use_double_quant=getattr(args, 'bnb_4bit_use_double_quant', False),
-            bnb_4bit_quant_type=getattr(args, 'bnb_4bit_quant_type', 'fp4'), # can be fp4 or nf4
-        )
+    if args.quant_config == 'bnb':
+        if args.quant_dtype_weights == '8':
+            quantization_config = BitsAndBytesConfig(
+                load_in_8bit=True,
+                llm_int8_threshold=getattr(args, 'bnb_int8_threshold', 6.0),
+            )
+        elif args.quant_dtype_weights == '4':
+            quantization_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=act_dtype,
+                bnb_4bit_use_double_quant=getattr(args, 'bnb_4bit_use_double_quant', False),
+                bnb_4bit_quant_type=getattr(args, 'bnb_4bit_quant_type', 'fp4'), # can be fp4 or nf4
+            )
+        else:
+            raise NotImplementedError
 
     elif args.quant_config == 'quanto' and args.quant_dtype_acts is None:
         # weights can be None, int2, int4, int8, float8
         # acts can be None, int8, float8
         # acts need to use quanto library directly
-        quantization_config = QuantoConfig(
-            weights=args.quant_dtype_weights,
-        )
+        if args.quant_dtype_weights in ['int2', 'int4', 'int8', 'float8']:
+            quantization_config = QuantoConfig(
+                weights=args.quant_dtype_weights,
+            )
+        else:
+            raise NotImplementedError
 
     elif args.quant_config == 'hqq':
         assert args.quant_dtype_weights.isnumeric(), 'hqq requires numeric quant_dtype_weights'
@@ -105,6 +111,8 @@ def get_dtype_quantization_config(args):
         elif args.quant_dtype_weights and args.quant_dtype_weights.isnumeric():
             dtype = getattr(torch, f'int{args.quant_dtype_weights}', 'int8')
             quantization_config = TorchAoConfig(quant_type=IntxWeightOnlyConfig(weight_dtype=dtype))
+        else:
+            raise NotImplementedError
 
     return model_dtype, quantization_config
 
@@ -125,6 +133,9 @@ def quantization_calibration(dataset, benchmark, model, args):
 
     weights = keyword_to_dtype(args.quant_dtype_weights)
     activations = keyword_to_dtype(args.quant_dtype_acts)
+
+    if args.quant_dtype_acts is None:
+        raise NotImplementedError(f'quant_dtype_acts is {args.quant_dtype_acts}: {activations}')
 
     quantize(model, weights=weights, activations=activations)
 

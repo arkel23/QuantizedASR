@@ -3,6 +3,7 @@ import glob
 import json
 import time
 from collections import defaultdict
+from statistics import mean, stdev
 
 import wandb
 import evaluate
@@ -12,6 +13,7 @@ from torch.nn.attention import sdpa_kernel, SDPBackend
 from transformers import StoppingCriteria, StoppingCriteriaList
 
 from qasr.data.data_utils import preprocess_batch, postprocess_predictions
+from .metrics import compute_metrics
 
 
 class MultipleTokenBatchStoppingCriteria(StoppingCriteria):
@@ -257,10 +259,6 @@ def score_results(directory: str, model_id: str = None):
     return composite_wer, results
 
 
-# ================================
-# Inference
-# ================================
-
 def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
     dtype = getattr(torch, args.act_dtype, None) if getattr(args, 'act_dtype', None) else torch.float32
 
@@ -339,6 +337,7 @@ def make_benchmark_fn(model, processor, normalizer, model_input_name, gen_kwargs
         batch['audio_length_s'] = audio_lengths_s
         # print(preds, minibatch_size, runtime, audio_lengths_s, batch['audio_length_s'])
         # batch['audio_length_s'] = 30
+        # print('audio_length_s:', batch['audio_length_s'])
 
         return batch
 
@@ -378,6 +377,9 @@ def evaluate_dataset(dataset, benchmark, args):
         'references': [],
     }
 
+    # the map function happens in parallel and processes as a batch tensor/list
+    # but this loop functions on a sample level 
+    # so each of the elements in results are single vlaues
     for sample in tqdm(iter(dataset), desc='Samples...'):
         for k in results:
             results[k].append(sample[k])
@@ -398,10 +400,7 @@ def compute_and_log_metrics(results, model, args):
         transcription_time=results['transcription_time_s'],
     )
 
-    wer_metric = evaluate.load('wer')
-    wer = round(100 * wer_metric.compute(
-        references=results['references'], predictions=results['predictions']
-    ), 2)
+    scores_dic = compute_metrics(results, args.eval_metrics)
 
     rtfx = round(
         sum(results['audio_length_s']) / sum(results['transcription_time_s']), 2
@@ -414,14 +413,22 @@ def compute_and_log_metrics(results, model, args):
     else:
         max_memory = 0
 
-    print('Results saved at path:', os.path.abspath(manifest_path))
-    print('WER:', wer, '%  RTFx:', rtfx)
-
-    wandb.log({
-        'wer': wer, 'rtfx': rtfx,
+    scores_dic.update({
+        'rtfx': rtfx,
         'max_memory': max_memory,
-        'no_params': no_params
+        'no_params': no_params,
+        # also include dataset stats
+        'num_samples': len(results['audio_length_s']),
+        'audio_length_s_mean': mean(results['audio_length_s']),
+        'audio_length_s_std': stdev(results['audio_length_s']),
+        'audio_length_s_min': min(results['audio_length_s']),
+        'audio_length_s_max': max(results['audio_length_s']),
     })
+
+    print('Results saved at path:', os.path.abspath(manifest_path))
+    print('Metrics:', scores_dic)
+
+    wandb.log(scores_dic)
     wandb.finish()
 
     return 0
