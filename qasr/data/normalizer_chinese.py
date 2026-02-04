@@ -1,5 +1,6 @@
 # https://github.com/mozillazg/python-pinyin
 from pypinyin import lazy_pinyin, Style
+import opencc
 
 from .normalizer_zh_speechio import TextNorm
 from .normalizer_zh_ntnu import normalize_corpus
@@ -45,6 +46,9 @@ if __name__ == '__main__':
         remove_space=True,
         cc_mode='', # also s2t or t2s
     )
+
+    # converter = opencc.OpenCC('s2t.json')
+    # converter.convert('汉字')  # 漢字
 
     for text in test_texts:
         print('Original text: ')

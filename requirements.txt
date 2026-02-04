@@ -12,6 +12,9 @@ pip3 install torch torchvision
 
 pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.0 iso639-lang PyYAML accelerate bert-score pypinyin
 
+# some normalizers use OpenCC
+# pip install OpenCC==1.1.0
+
 # recent version of datasets requires pyarrow > 21 which requires glib > 2.28
 # however most of our servers have version 2.27 or older glib
 # alternative is to install datasets==4.0 which has lower pyarrow version req (>15)
