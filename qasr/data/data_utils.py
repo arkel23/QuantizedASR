@@ -48,6 +48,7 @@ def is_target_text_in_range(ref):
     else:
         return ref.strip() != ''
 
+
 def get_audio(sample):
     if 'audio' in sample:
         return sample['audio']
@@ -163,18 +164,18 @@ def prepare_data(dataset, english, dataset_path):
     # preprocess text for datasets that need it
     dataset = preprocess_dataset(dataset, dataset_path)
 
-    # may need to coordinate with the audio_lengths function in preprocess_batch
-    # also convert to a uniform format and may need to process from multichannel to single
-
-    # Re-sample to 16kHz and normalise transcriptions
-    dataset = dataset.cast_column('audio', Audio(sampling_rate=16_000))
-
     normalizer = make_normalizer(english)
     normalize = make_normalize_fn(normalizer)
     # the map function can take num_proc to control number of workers
     dataset = dataset.map(normalize)
 
     dataset = dataset.filter(is_target_text_in_range, input_columns=['norm_text'])
+
+    # may need to coordinate with the audio_lengths function in preprocess_batch
+    # also convert to a uniform format and may need to process from multichannel to single
+
+    # Re-sample to 16kHz and normalise transcriptions
+    dataset = dataset.cast_column('audio', Audio(sampling_rate=16_000))
 
     # in the future may want to use this to filter out samples
     # dataset = dataset.filter(is_audio_in_length_range, input_columns=['input_length'])

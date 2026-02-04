@@ -1,11 +1,44 @@
 import argparse
 
+import yaml
 import wandb
 import torch
 
 
+def load_config_from_yaml(yaml_path):
+    """Load config from YAML file"""
+    with open(yaml_path, 'r') as f:
+        return yaml.safe_load(f)
+
+
+def merge_yaml_with_args(parser, yaml_config):
+    """Merge YAML config with argparse, CLI args take precedence"""
+    # Parse command line args
+    args = parser.parse_args()
+    
+    # If no YAML provided, return CLI args
+    if not yaml_config:
+        return args
+    
+    # Convert args to dict
+    args_dict = vars(args)
+    
+    # Update with YAML values only if not set via CLI
+    defaults = vars(parser.parse_args([]))  # Get default values
+    for key, value in yaml_config.items():
+        # Only override if CLI arg is still at default value
+        if key in args_dict and args_dict[key] == defaults.get(key):
+            args_dict[key] = value
+    
+    return argparse.Namespace(**args_dict)
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
+
+    parser.add_argument('--config', type=str, default=None, 
+                       help='Path to YAML config file')
+
     parser.add_argument('--serial', type=int, default=0)
     parser.add_argument('--device', type=int, default=0)
     parser.add_argument('--eval_metrics', type=str, nargs='+', default=['wer_all', 'bert'],
@@ -61,14 +94,21 @@ def parse_args():
     parser.add_argument('--wandb_entity', type=str, default='nycu_pcs')
 
     parser.set_defaults(streaming=True)
+
     args = parser.parse_args()
 
+    # Load YAML if provided
+    if args.config:
+        yaml_config = load_config_from_yaml(args.config)
+        args = merge_yaml_with_args(parser, yaml_config)
+    
     if torch.cuda.is_available() and args.device != '-1':
         args.device = f'cuda:{args.device}'
     else:
         args.device = 'cpu'
 
-    if any([model_family in args.model_id for model_family in ['Voxtral', 'Qwen', 'granite', 'flamingo']]) and args.max_new_tokens is None:
+    if any([model_family in args.model_id for model_family in [
+        'Voxtral', 'Qwen', 'granite', 'flamingo']]) and args.max_new_tokens is None:
         args.max_new_tokens = 200
 
     if 'Qwen2.5-Omni' in args.model_id:
