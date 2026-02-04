@@ -12,6 +12,21 @@ from .normalizer import EnglishTextNormalizer, BasicMultilingualTextNormalizer
 from .preprocess_specific_datasets import preprocess_dataset
 
 
+DATASET_PATH_EN_LIST = [
+    'hf-audio', 'audio-MNIST', 'librispeech', 'tedlium', '-en', 'questions', 'speech-', 'air-chat',
+]
+DATASET_CONFIG_EN_LIST = ['_en', 'monolingual']
+
+
+def check_if_english(dataset_path='hf-audio/esb-datasets-test-only-sorted', dataset_config='ami', split='test'):
+    if (any([kw in dataset_path for kw in DATASET_PATH_EN_LIST]) or \
+        any([kw in dataset_config for kw in DATASET_CONFIG_EN_LIST]) or split == 'en'):
+        english = True
+    else:
+        english = False
+    return english
+
+
 def prepare_filter_language(target_language='en'):
     target_language = 'eng' if target_language == 'en' else target_language
 
@@ -137,10 +152,7 @@ def load_data(
             token=True,
         )
 
-    if 'hf-audio' in dataset_path or '_en' in dataset_config or dataset_config == 'monolingual' or split == 'en':
-        english = True
-    else:
-        english = False
+    english = check_if_english(dataset_path, dataset_config, split)
 
     print(dataset_path, dataset, 'english dataset: ', english)
 
