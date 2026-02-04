@@ -6,7 +6,7 @@ configs=("multilingual_ar" "multilingual_ar" "multilingual_es" "multilingual_es"
 
 splits=("dev" "test" "dev" "test" "dev" "test")
 
-base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4 --batch_size 2 --long_form --long_form_tricks --model openai/whisper-tiny"
+base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4 --batch_size 1 --long_form --long_form_tricks --model openai/whisper-tiny"
 
 # Iterate through all combinations
 for i in "${!dataset_paths[@]}"; do
