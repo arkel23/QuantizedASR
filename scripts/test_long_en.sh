@@ -1,10 +1,10 @@
 #!/bin/bash
 
-dataset_long_paths=("hf-audio/asr-leaderboard-longform" "hf-audio/asr-leaderboard-longform" "hf-audio/asr-leaderboard-longform" "distil-whisper/meanwhile" "distil-whisper/rev16" "distil-whisper/tedlium-long-form" "espnet/floras" "espnet/floras")
+dataset_paths=("hf-audio/asr-leaderboard-longform" "hf-audio/asr-leaderboard-longform" "hf-audio/asr-leaderboard-longform" "distil-whisper/meanwhile" "distil-whisper/rev16" "distil-whisper/tedlium-long-form" "espnet/floras" "espnet/floras")
 
-dataset_configs=("earnings21" "earnings22" "tedlium" "default" "whisper_subset" "default" "monolingual" "monolingual")
+configs=("earnings21" "earnings22" "tedlium" "default" "whisper_subset" "default" "monolingual" "monolingual")
 
-dataset_splits=("test" "test" "test" "test" "test" "validation" "dev" "test")
+splits=("test" "test" "test" "test" "test" "validation" "dev" "test")
 
 base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4 --batch_size 2 --long_form --long_form_tricks"
 

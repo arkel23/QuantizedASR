@@ -14,5 +14,4 @@ for i in "${!dataset_paths[@]}"; do
     cmd="$base_cmd --dataset_path ${dataset_paths[$i]} --dataset ${configs[$i]} --split ${splits[$i]}"
     echo "Running: $cmd"
     $cmd
-
 done
