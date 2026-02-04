@@ -49,20 +49,14 @@ def is_target_text_in_range(ref):
         return ref.strip() != ''
 
 
-def get_audio(sample):
-    if 'audio' in sample:
-        return sample['audio']
-    # adi-gov-tw
-    elif 'mp3' in sample:
-        return sample.pop('mp3')
-    # asr
-    elif 'flac' in sample:
-        return sample.pop('flac')
+def get_audio_col_name(dataset_path):
+    if 'adi-gov-tw' in dataset_path:
+        audio_col_name = 'mp3'
+    elif 'ASMR' in dataset_path:
+        audio_col_name = 'flac'
     else:
-        raise ValueError(
-            f"Expected transcript column of either 'audio', or 'mp3'. Got sample of "
-            ".join{sample.keys()}. Ensure a audio column name is present in the dataset."
-        )
+        audio_col_name = 'audio'
+    return audio_col_name
 
 
 def get_text(sample):
@@ -118,8 +112,6 @@ def make_normalize_fn(normalizer):
         batch['original_text'] = get_text(batch)
         batch['norm_text'] = normalizer(batch['original_text'])
 
-        batch['audio'] = get_audio(batch)
-
         return batch
     return normalize
 
@@ -160,32 +152,31 @@ def load_data(
     return dataset, english
 
 
-def prepare_data(dataset, english, dataset_path):
+def prepare_data(dataset, dataset_path, audio_col_name='audio', english=True):
+    # also convert to a uniform format and may need to process from multichannel to single
+    # Re-sample to 16kHz and normalise transcriptions
+    dataset = dataset.cast_column(audio_col_name, Audio(sampling_rate=16_000))
+
     # preprocess text for datasets that need it
     dataset = preprocess_dataset(dataset, dataset_path)
 
-    # may need to coordinate with the audio_lengths function in preprocess_batch
-    # also convert to a uniform format and may need to process from multichannel to single
-
-    # Re-sample to 16kHz and normalise transcriptions
-    dataset = dataset.cast_column('audio', Audio(sampling_rate=16_000))
-
+    # normalize text
     normalizer = make_normalizer(english)
     normalize = make_normalize_fn(normalizer)
     # the map function can take num_proc to control number of workers
     dataset = dataset.map(normalize)
 
+    # filter
     dataset = dataset.filter(is_target_text_in_range, input_columns=['norm_text'])
-
-    # in the future may want to use this to filter out samples
     # dataset = dataset.filter(is_audio_in_length_range, input_columns=['input_length'])
 
     return dataset, normalizer
 
 
 def load_and_prepare_dataset(args, warmup=False):
+    args.audio_col_name = get_audio_col_name(args.dataset_path)
     dataset, english = load_data(args.dataset_path, args.dataset, args.split, args.streaming)
-    dataset, normalizer = prepare_data(dataset, english, args.dataset_path)
+    dataset, normalizer = prepare_data(dataset, args.dataset_path, args.audio_col_name, english)
 
     if warmup:
         num = args.warmup_steps * args.batch_size
