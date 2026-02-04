@@ -74,6 +74,7 @@ def parse_args():
     parser.add_argument('--split', type=str, default='test')
     parser.add_argument('--data_dtype', type=str, default='bfloat16',
                          choices=['bfloat16', 'float16', 'float32'])
+    parser.add_argument('--target_sampling_rate', type=int, default=16_000)
 
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--max_eval_samples', type=int, default=None)

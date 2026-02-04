@@ -152,10 +152,10 @@ def load_data(
     return dataset, english
 
 
-def prepare_data(dataset, dataset_path, audio_col_name='audio', english=True):
+def prepare_data(dataset, dataset_path, audio_col_name='audio', english=True, sampling_rate=16_000):
     # also convert to a uniform format and may need to process from multichannel to single
     # Re-sample to 16kHz and normalise transcriptions
-    dataset = dataset.cast_column(audio_col_name, Audio(sampling_rate=16_000))
+    dataset = dataset.cast_column(audio_col_name, Audio(sampling_rate=sampling_rate))
 
     # preprocess text for datasets that need it
     dataset = preprocess_dataset(dataset, dataset_path)
@@ -176,7 +176,8 @@ def prepare_data(dataset, dataset_path, audio_col_name='audio', english=True):
 def load_and_prepare_dataset(args, warmup=False):
     args.audio_col_name = get_audio_col_name(args.dataset_path)
     dataset, english = load_data(args.dataset_path, args.dataset, args.split, args.streaming)
-    dataset, normalizer = prepare_data(dataset, args.dataset_path, args.audio_col_name, english)
+    dataset, normalizer = prepare_data(
+        dataset, args.dataset_path, args.audio_col_name, english, args.target_sampling_rate)
 
     if warmup:
         num = args.warmup_steps * args.batch_size
@@ -202,11 +203,11 @@ def load_and_prepare_dataset(args, warmup=False):
 # ================================
 
 def preprocess_batch(batch, processor, model, model_input_name, args):
-    audios = [a['array'] for a in batch['audio']]
+    audios = [a['array'] for a in batch[args.audio_col_name]]
     minibatch_size = len(audios)
 
     # this assumes sampling rate is 16 kHz, if different then need flag
-    ds_sampling_rate = getattr(args, 'ds_sampling_rate', 16_000)
+    ds_sampling_rate = getattr(args, 'target_sampling_rate', 16_000)
     audio_lengths = [a.shape[0] / ds_sampling_rate for a in audios]
 
     # 1.1 Pad audios to max batch size if using torch compile to prevent re-compilations
