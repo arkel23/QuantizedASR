@@ -66,13 +66,9 @@ def read_manifest(manifest_path: str):
 
 
 def write_manifest(
+    results_dir: str,
     references: list,
     transcriptions: list,
-    run_name: str,
-    # model_id: str,
-    # dataset_path: str,
-    # dataset_name: str,
-    # split: str,
     audio_length: list = None,
     transcription_time: list = None,
 ):
@@ -92,10 +88,6 @@ def write_manifest(
     Returns:
         Path to the manifest file.
     '''
-    # model_id = model_id.replace('/', '-')
-    # dataset_path = dataset_path.replace('/', '-')
-    # dataset_name = dataset_name.replace('/', '-')
-
     if len(references) != len(transcriptions):
         raise ValueError(
             f'The number of samples in `references` ({len(references)}) '
@@ -122,16 +114,7 @@ def write_manifest(
         else len(references) * [None]
     )
 
-    # basedir = './results/'
-    # os.makedirs(basedir, exist_ok=True)
-
-    # run_name = f"{run_name.replace('/', '-')}.jsonl"
-
-    # manifest_path = os.path.join(basedir, run_name)
-    # manifest_path = os.path.join(
-    #     basedir, f'MODEL_{model_id}_DATASET_{dataset_path}_{dataset_name}_{split}.jsonl'
-    # )
-    manifest_path = os.path.join(run_name, 'transcript.jsonl')
+    manifest_path = os.path.join(results_dir, 'transcript.jsonl')
 
     with open(manifest_path, 'w', encoding='utf-8') as f:
         for idx, (text, transcript, audio_length, transcription_time) in enumerate(
@@ -390,13 +373,9 @@ def evaluate_dataset(dataset, benchmark, args):
 
 def compute_and_log_metrics(results, model, args):
     manifest_path = write_manifest(
+        args.results_dir,
         results['references'],
         results['predictions'],
-        args.run_name_legacy,
-        # args.model_id,
-        # args.dataset_path,
-        # args.dataset,
-        # args.split,
         audio_length=results['audio_length_s'],
         transcription_time=results['transcription_time_s'],
     )

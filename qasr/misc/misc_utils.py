@@ -142,6 +142,7 @@ def init_procedure(args, use_wandb=True):
     args.run_name_legacy = args.run_name.replace('/', '_')
 
     args.results_dir = os.path.join(args.results_dir, args.run_name_legacy)
+    os.makedirs(args.results_dir, exist_ok=True)
 
     if use_wandb:
         wandb.init(project=args.wandb_project, entity=args.wandb_entity, config=args)
