@@ -61,6 +61,7 @@ def clean_air_chat_asr(example):
 
         # Clean up extra spaces created by tag removal
         example['text'] = " ".join(full_text.split()).strip()
+        # print(example['text'])
 
     except (json.JSONDecodeError, TypeError):
         # Fallback if the meta_info is malformed
