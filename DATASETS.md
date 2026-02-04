@@ -49,6 +49,7 @@ TwinkStart/speech-HSK default hsk4
 TwinkStart/speech-HSK default hsk5
 TwinkStart/speech-HSK default hsk6
 
+TwinkStart/CommonVoice_15 default zh
 
 JacobLinCool/common_voice_19_0_zh-TW default validated_without_test
 JacobLinCool/common_voice_19_0_zh-TW default test
@@ -58,6 +59,7 @@ adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-zhtw default test
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien default test
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka default test
 
+TwinkStart/CommonVoice_15 default yue
 
 
 nithinraok/asr-leaderboard-datasets fleurs_bg test
@@ -118,8 +120,6 @@ TwinkStart/facebook_multilingual_librispeech default mls_spanish
 TwinkStart/CommonVoice_15 default en
 TwinkStart/CommonVoice_15 default fr
 
-TwinkStart/CommonVoice_15 default yue
-TwinkStart/CommonVoice_15 default zh
 
 
 espnet/floras monolingual dev
