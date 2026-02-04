@@ -6,7 +6,7 @@ configs=("ami" "common_voice" "earnings22" "gigaspeech" "librispeech" "librispee
 
 splits=("test" "test" "test" "test" "test.clean" "test.other" "test" "test" "test" "test" "test" "dev_clean" "dev_other" "test_clean" "test_other" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test")
 
-base_cmd="python -m tools.evaluate --serial 999"
+base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4"
 
 # Iterate through all combinations
 for i in "${!dataset_paths[@]}"; do

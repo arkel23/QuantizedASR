@@ -63,7 +63,10 @@ def parse_args():
     parser.set_defaults(streaming=True)
     args = parser.parse_args()
 
-    args.device = f'cuda:{args.device}' if args.device != -1 else 'cpu'
+    if torch.cuda.is_available() and args.device != '-1':
+        args.device = f'cuda:{args.device}'
+    else:
+        args.device = 'cpu'
 
     if any([model_family in args.model_id for model_family in ['Voxtral', 'Qwen', 'granite', 'flamingo']]) and args.max_new_tokens is None:
         args.max_new_tokens = 200
