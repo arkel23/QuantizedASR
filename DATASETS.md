@@ -26,7 +26,6 @@ TwinkStart/tedlium release1 test
 TwinkStart/tedlium release2 test
 TwinkStart/tedlium release3 test
 
-adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-en default train
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-en default test
 
 TwinkStart/llama-questions default test
@@ -54,12 +53,9 @@ TwinkStart/speech-HSK default hsk6
 JacobLinCool/common_voice_19_0_zh-TW default validated_without_test
 JacobLinCool/common_voice_19_0_zh-TW default test
 
-adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-zhtw default train
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-zhtw default test
 
-adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien default train
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien default test
-adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka default train
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka default test
 
 
@@ -111,12 +107,6 @@ nithinraok/asr-leaderboard-datasets mls_nl test
 nithinraok/asr-leaderboard-datasets mls_pl test
 nithinraok/asr-leaderboard-datasets mls_pt test
 
-TwinkStart/CommonVoice_15 default en
-TwinkStart/CommonVoice_15 default fr
-
-TwinkStart/CommonVoice_15 default yue
-TwinkStart/CommonVoice_15 default zh
-
 TwinkStart/facebook_multilingual_librispeech default mls_dutch
 TwinkStart/facebook_multilingual_librispeech default mls_french
 TwinkStart/facebook_multilingual_librispeech default mls_german
@@ -125,10 +115,13 @@ TwinkStart/facebook_multilingual_librispeech default mls_polish
 TwinkStart/facebook_multilingual_librispeech default mls_portuguese
 TwinkStart/facebook_multilingual_librispeech default mls_spanish
 
-OmniAICreator/ASMR-Archive-Processed default train
+TwinkStart/CommonVoice_15 default en
+TwinkStart/CommonVoice_15 default fr
+
+TwinkStart/CommonVoice_15 default yue
+TwinkStart/CommonVoice_15 default zh
 
 
-espnet/floras monolingual train
 espnet/floras monolingual dev
 espnet/floras monolingual test
 espnet/floras multilingual dev
@@ -139,13 +132,24 @@ hf-audio/asr-leaderboard-longform earnings22 test
 hf-audio/asr-leaderboard-longform tedlium test
 
 distil-whisper/meanwhile default test
-distil-whisper/rev16 full test
 distil-whisper/rev16 whisper_subset test
 distil_whisper/tedlium-long-form default validation
 
 
+# for training
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-en default train
+
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-zhtw default train
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien default train
+adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka default train
+
+espnet/floras monolingual train
+
+OmniAICreator/ASMR-Archive-Processed default train
+
 # not suitable for ASR
 TwinkStart/MMAU default v05.15.25
+distil-whisper/rev16 full test
 
 # needs additional preprocessing, also not compatible with streaming
 speechcolab/gigaspeech2 default train
