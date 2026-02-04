@@ -260,7 +260,7 @@ def score_results(directory: str, model_id: str = None):
 
 
 def run_inference(model, inputs, gen_kwargs, args, min_new_tokens=None):
-    dtype = getattr(torch, args.act_dtype, None)
+    dtype = getattr(torch, args.act_dtype, None) if getattr(args, 'act_dtype', None) else None
 
     if args.flash_attn:
         with torch.no_grad():
