@@ -6,7 +6,7 @@ configs=("earnings21" "earnings22" "tedlium" "default" "whisper_subset" "default
 
 splits=("test" "test" "test" "test" "test" "validation" "dev" "test")
 
-base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4 --batch_size 1 --long_form --long_form_tricks"
+base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4 --batch_size 2 --long_form --long_form_tricks --eval_metrics wer_all"
 
 # Iterate through all combinations
 for i in "${!dataset_paths[@]}"; do

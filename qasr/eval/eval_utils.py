@@ -122,15 +122,16 @@ def write_manifest(
         else len(references) * [None]
     )
 
-    basedir = './results/'
-    os.makedirs(basedir, exist_ok=True)
+    # basedir = './results/'
+    # os.makedirs(basedir, exist_ok=True)
 
-    run_name = f"{run_name.replace('/', '-')}.jsonl"
+    # run_name = f"{run_name.replace('/', '-')}.jsonl"
 
-    manifest_path = os.path.join(basedir, run_name)
+    # manifest_path = os.path.join(basedir, run_name)
     # manifest_path = os.path.join(
     #     basedir, f'MODEL_{model_id}_DATASET_{dataset_path}_{dataset_name}_{split}.jsonl'
     # )
+    manifest_path = os.path.join(run_name, 'transcript.jsonl')
 
     with open(manifest_path, 'w', encoding='utf-8') as f:
         for idx, (text, transcript, audio_length, transcription_time) in enumerate(

@@ -1,3 +1,4 @@
+import os
 import argparse
 
 import yaml
@@ -39,6 +40,7 @@ def parse_args():
     parser.add_argument('--config', type=str, default=None, 
                        help='Path to YAML config file')
 
+    parser.add_argument('--results_dir', type=str, default='results')
     parser.add_argument('--serial', type=int, default=0)
     parser.add_argument('--device', type=int, default=0)
     parser.add_argument('--eval_metrics', type=str, nargs='+', default=['wer_all', 'bert'],
@@ -94,6 +96,9 @@ def parse_args():
     parser.add_argument('--wandb_project', type=str, default='OpenASR')
     parser.add_argument('--wandb_entity', type=str, default='nycu_pcs')
 
+    parser.add_argument('--layer_pattern', type=str, default=None,
+                        help='string/regex pattern for matching layers for vis')
+
     parser.set_defaults(streaming=True)
 
     args = parser.parse_args()
@@ -118,7 +123,7 @@ def parse_args():
     return args
 
 
-def init_procedure(args):
+def init_procedure(args, use_wandb=True):
     if torch.cuda.is_available():
         torch.cuda.reset_peak_memory_stats()
 
@@ -134,8 +139,12 @@ def init_procedure(args):
 
     args.run_name = f'{args.model_id}{q_all}_{ds}_{args.serial}'
     args.run_name_legacy = f'MODEL_{args.model_id}{q_all}_DATASET_{ds}_{args.serial}'
+    args.run_name_legacy = args.run_name.replace('/', '_')
 
-    wandb.init(project=args.wandb_project, entity=args.wandb_entity, config=args)
-    wandb.run.name = args.run_name
+    args.results_dir = os.path.join(args.results_dir, args.run_name_legacy)
+
+    if use_wandb:
+        wandb.init(project=args.wandb_project, entity=args.wandb_entity, config=args)
+        wandb.run.name = args.run_name
 
     return 0
