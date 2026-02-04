@@ -95,7 +95,8 @@ def normalize_corpus(corpus,
                      is_seg=True,
                      is_remove_symbols=True,
                      is_remove_numbers=True,
-                     is_remove_alphabets=True):
+                     is_remove_alphabets=True,
+                     return_string=True):
 
     normalized_corpus = []
     # normalize each document in the corpus
@@ -120,6 +121,9 @@ def normalize_corpus(corpus,
             doc = remove_numbers(doc)
 
         normalized_corpus.append(remove_extra_spaces(doc))
+
+    if return_string:
+        normalized_corpus = ''.join(normalized_corpus)
 
     return normalized_corpus
 
