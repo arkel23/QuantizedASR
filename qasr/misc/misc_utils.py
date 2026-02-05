@@ -81,6 +81,7 @@ def parse_args():
                         help='chinese normalizer')
     parser.add_argument('--pinyin', action='store_true',
                         help='convert chinese to pinyin, needed if evaluating tones')
+    parser.add_argument('--traditional', action='store_true')
 
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--max_eval_samples', type=int, default=None)

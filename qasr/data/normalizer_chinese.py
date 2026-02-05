@@ -4,10 +4,16 @@ import opencc
 from pypinyin import lazy_pinyin, Style
 from tn.chinese.normalizer import Normalizer
 
-from normalizer_zh_speechio import TextNorm
-from normalizer_zh_ultraeval import TextNormUltraEval
-from normalizer_zh_ntnu import normalize_corpus
-from normalizer_zh_aditw import ADITWNormalizer
+try:
+    from .normalizer_zh_speechio import TextNorm
+    from .normalizer_zh_ultraeval import TextNormUltraEval
+    from .normalizer_zh_ntnu import normalize_corpus
+    from .normalizer_zh_aditw import ADITWNormalizer
+except:
+    from normalizer_zh_speechio import TextNorm
+    from normalizer_zh_ultraeval import TextNormUltraEval
+    from normalizer_zh_ntnu import normalize_corpus
+    from normalizer_zh_aditw import ADITWNormalizer
 
 
 class Pinyinizer:
@@ -33,6 +39,7 @@ class Pinyinizer:
 class ChineseNormalizer:
     def __init__(
         self,
+        traditional = False,
         pinyin = False,
         style = 'TONE3',
         neutral_tone_with_five: bool = False,
@@ -46,7 +53,7 @@ class ChineseNormalizer:
             remove_erhua=False,
             check_chars=False,
             remove_space=True,
-            cc_mode='s2t',
+            cc_mode='s2t' if traditional else 't2s',
         )
 
         self.pinyin = pinyin

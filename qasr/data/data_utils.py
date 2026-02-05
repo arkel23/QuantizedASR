@@ -9,7 +9,7 @@ except:
     AudioFlamingo3Processor = VoxtralProcessor
 
 from .normalizer import EnglishTextNormalizer, BasicMultilingualTextNormalizer
-from .normalize_chinese import ChineseNormalizer
+from .normalizer_chinese import ChineseNormalizer
 from .preprocess_specific_datasets import preprocess_dataset
 
 
