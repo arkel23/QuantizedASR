@@ -179,7 +179,7 @@ def load_model_and_processor(args):
                 'eos_token_id': processor.tokenizer.eos_token_id,
             })
 
-        if args.force_asr_language:
+        if args.force_asr_language and 'whisper' in args.model_id:
             gen_kwargs['language'] = args.force_asr_language
             gen_kwargs['task'] = 'transcribe'
             gen_kwargs['generation_config'] = GenerationConfig.from_pretrained(args.model_id)
@@ -201,7 +201,7 @@ def load_model_and_processor(args):
                 })
 
         # for multilingual Whisper-checkpoints we see a definitive WER boost by setting the language and task args
-        if getattr(model.generation_config, 'is_multilingual', False) and args.force_asr_language:
+        if getattr(model.generation_config, 'is_multilingual', False) and args.force_asr_language and 'whisper' in args.model_id:
             gen_kwargs['language'] = args.force_asr_language
             gen_kwargs['task'] = 'transcribe'
 
