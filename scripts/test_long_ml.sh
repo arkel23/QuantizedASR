@@ -1,10 +1,10 @@
 #!/bin/bash
 
-dataset_paths=("espnet/floras" "espnet/floras" "espnet/floras" "espnet/floras" "espnet/floras" "espnet/floras")
+dataset_paths=("espnet/floras" "espnet/floras" "espnet/floras" "espnet/floras")
 
-configs=("multilingual_ar" "multilingual_ar" "multilingual_es" "multilingual_es" "multilingual_eng" "multilingual_en")
+configs=("multilingual_ar" "multilingual_ar" "multilingual_es" "multilingual_es")
 
-splits=("dev" "test" "dev" "test" "dev" "test")
+splits=("dev" "test" "dev" "test")
 
 base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4 --batch_size 2 --long_form --long_form_tricks --model_id openai/whisper-tiny --eval_metrics wer_all"
 

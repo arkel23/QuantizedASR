@@ -1,13 +1,10 @@
 # https://github.com/adi-gov-tw/Taiwan-Tongues-ASR-CE/blob/main/asr_core.py
 import re
+import unicodedata
 from datetime import datetime, timedelta
 
 import opencc
 import cn2an
-import unicodedata
-
-
-s2tw = opencc.OpenCC("s2tw")
 
 
 def replace_words(article):
@@ -39,8 +36,6 @@ def remove_special_characters_by_dataset_name(text):
     chars_to_ignore_regex_base = r'[,"\'。，^¿¡；「」《》:：＄$\[\]〜～·・‧―─–－⋯、＼【】=<>{}_〈〉　）（—『』«»→„…(),`&＆﹁﹂#＃\\!?！;]'
 
     sentence = re.sub(chars_to_ignore_regex_base, "", text)
-    sentence = full_to_half(sentence)
-
     return sentence
 
 
@@ -75,10 +70,60 @@ def num_to_cn(text, mode=0):
     return text
 
 
+class ADITWNormalizer:
+    def __init__(
+        self,
+        replace_words: bool = True,
+        convert_to_zh_tw: bool = True,
+        remove_special_characters: bool = True,
+        to_banjiao: bool = True,
+        to_lower: bool = False,
+        to_upper: bool = True,
+        convert_numbers: bool = False,
+    ):
+
+        self.replace_words = replace_words
+        self.convert_to_zh_tw = convert_to_zh_tw
+        self.remove_special_characters = remove_special_characters
+        self.to_banjiao = to_banjiao
+        self.to_lower = to_lower
+        self.to_upper = to_upper
+        self.convert_numbers = convert_numbers
+
+        if convert_to_zh_tw:
+            self.cc = opencc.OpenCC("s2tw")
+
+
+    def __call__(self, text):
+        if self.replace_words:
+            text = replace_words(text)
+
+        if self.convert_to_zh_tw:
+            text = self.cc.convert(text)
+
+        if self.remove_special_characters:
+            text = remove_special_characters_by_dataset_name(text)
+
+        if self.to_banjiao:
+            text = full_to_half(text)
+
+        if self.to_lower:
+            text = text.lower()
+
+        if self.to_upper:
+            text = text.upper()
+
+        if self.convert_numbers:
+            text = num_to_cn(text, mode=0)
+
+        return text
+
+
 if __name__ == '__main__':
     text = '该  网站  根据  雇员  的  反馈'
+    print(text)
 
-    # 後處理
-    processed_text = remove_special_characters_by_dataset_name(
-        s2tw.convert(replace_words(text))
-    ).lower()
+    normalizer = ADITWNormalizer()
+
+    text_norm = normalizer(text)
+    print(text_norm)

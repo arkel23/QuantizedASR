@@ -1,12 +1,85 @@
-# https://github.com/mozillazg/python-pinyin
-from pypinyin import lazy_pinyin, Style
+import argparse
+
 import opencc
+from pypinyin import lazy_pinyin, Style
+from tn.chinese.normalizer import Normalizer
 
-from .normalizer_zh_speechio import TextNorm
-from .normalizer_zh_ntnu import normalize_corpus
+from normalizer_zh_speechio import TextNorm
+from normalizer_zh_ultraeval import TextNormUltraEval
+from normalizer_zh_ntnu import normalize_corpus
+from normalizer_zh_aditw import ADITWNormalizer
 
+
+class Pinyinizer:
+    def __init__(
+        self,
+        style = 'TONE3',
+        neutral_tone_with_five: bool = False,
+    ):
+
+        self.style = getattr(Style, style, 'TONE3')
+        self.neutral_tone_with_five = neutral_tone_with_five        
+
+    def __call__(self, text):
+        pinyin = lazy_pinyin(
+            text,
+            style=self.style,
+            neutral_tone_with_five=self.neutral_tone_with_five,
+        )
+        text = ' '.join(pinyin)
+        return text
+
+
+class ChineseNormalizer:
+    def __init__(
+        self,
+        pinyin = False,
+        style = 'TONE3',
+        neutral_tone_with_five: bool = False,
+    ):
+
+        self.normalizer = TextNormUltraEval(
+            to_banjiao=True,
+            to_upper=True,
+            to_lower=False,
+            remove_fillers=False,
+            remove_erhua=False,
+            check_chars=False,
+            remove_space=True,
+            cc_mode='s2t',
+        )
+
+        self.pinyin = pinyin
+        self.style = getattr(Style, style, 'TONE3')
+        self.neutral_tone_with_five = neutral_tone_with_five        
+
+    def __call__(self, text):
+        text = self.normalizer(text)
+
+        if self.pinyin:
+            text = lazy_pinyin(
+                text,
+                style=self.style,
+                neutral_tone_with_five=self.neutral_tone_with_five,
+            )
+            text = ' '.join(text)
+
+        return text
 
 if __name__ == '__main__':
+    p = argparse.ArgumentParser()
+
+    # normalizer options
+    p.add_argument('--to_banjiao', action='store_false', help='convert quanjiao chars to banjiao')
+    p.add_argument('--to_upper', action='store_false', help='convert to upper case')
+    p.add_argument('--to_lower', action='store_true', help='convert to lower case')
+    p.add_argument('--remove_fillers', action='store_true', help='remove filler chars such as "呃, 啊"')
+    p.add_argument('--remove_erhua', action='store_true', help='remove erhua chars such as "他女儿在那边儿 -> 他女儿在那边"')
+    p.add_argument('--check_chars', action='store_true' , help='skip sentences containing illegal chars')
+    p.add_argument('--remove_space', action='store_false' , help='remove whitespace')
+    p.add_argument('--cc_mode', choices=['', 't2s', 's2t'], default='s2t', help='convert between traditional to simplified')
+
+    args = p.parse_args()
 
     test_texts = [
         '该  网站  根据  雇员  的  反馈',
@@ -37,41 +110,97 @@ if __name__ == '__main__':
         ''',
     ]
 
+
     normalizer = TextNorm(
-        to_banjiao=True,
-        to_lower=True,
-        remove_fillers=False,
-        remove_erhua=False,
-        check_chars=True,
-        remove_space=True,
-        cc_mode='', # also s2t or t2s
+        to_banjiao = args.to_banjiao,
+        to_upper = args.to_upper,
+        to_lower = args.to_lower,
+        remove_fillers = args.remove_fillers,
+        remove_erhua = args.remove_erhua,
+        check_chars = args.check_chars,
+        remove_space = args.remove_space,
+        cc_mode = args.cc_mode,
     )
 
-    # converter = opencc.OpenCC('s2t.json')
-    # converter.convert('汉字')  # 漢字
+    normalizer_ue = TextNormUltraEval(
+        to_banjiao = args.to_banjiao,
+        to_upper = args.to_upper,
+        to_lower = args.to_lower,
+        remove_fillers = args.remove_fillers,
+        remove_erhua = args.remove_erhua,
+        check_chars = args.check_chars,
+        remove_space = args.remove_space,
+        cc_mode = args.cc_mode,
+    )
+
+    normalizer_aditw = ADITWNormalizer()
+
+    normalizer_wetext = Normalizer(
+        remove_interjections=False,
+        remove_erhua=False,
+        traditional_to_simple=True,
+        remove_puncts=True,
+        full_to_half=True,
+    )
+
+    cc_mode = f'{args.cc_mode}.json' if args.cc_mode else 's2t.json'
+    converter = opencc.OpenCC(cc_mode)
+
+    pinyinizer = Pinyinizer()
+
+    # ultraeval-audio applies another step after the chinese normalizer if cantonese (yue)
+    # https://github.com/OpenBMB/UltraEval-Audio/blob/7028c39e4209163159cccf02c097a6e771b844ac/audio_evals/lib/wer.py#L10
 
     for text in test_texts:
         print('Original text: ')
         print(text)
 
-        norm_ntnu = normalize_corpus(text, is_remove_numbers=False, is_remove_alphabets=False)
+        text_conv = converter.convert(text)
+        print('Converted text: ', text_conv)
+
+        text_norm_ntnu = normalize_corpus(text, is_remove_numbers=False, is_remove_alphabets=False)
         print('NTNU normalization: ')
-        print(norm_ntnu)
+        print(text_norm_ntnu)
 
-        norm_speechio = normalizer(text)
+        text_norm_speechio = normalizer(text)
         print('SpeechIO normalization: ')
-        print(norm_speechio)
+        print(text_norm_speechio)
 
-        # norm_pinyin = pinyin(text, style=Style.TONE3, neutral_tone_with_five=True)
+        text_norm_ue = normalizer_ue(text)
+        print('UltraEval normalization: ')
+        print(text_norm_ue)
+
+        text_norm_aditw = normalizer_aditw(text)
+        print('ADI-TW normalization: ')
+        print(text_norm_aditw)
+
+        text_norm_wetext = normalizer_wetext.normalize(text)
+        print('WeText normalization: ')
+        print(text_norm_wetext)
+
+        # https://github.com/mozillazg/python-pinyin
+        # text_norm_pinyin = pinyin(text, style=Style.TONE3, neutral_tone_with_five=True)
         # 不考虑多音字的情况
-        text_pinyin = ' '.join(lazy_pinyin(text, style=Style.TONE3, neutral_tone_with_five=True))
+        text_pinyin = pinyinizer(text)
         print('Pinyin without normalization: ')
         print(text_pinyin)
 
-        pinyin_norm_ntnu = ' '.join(lazy_pinyin(norm_ntnu, style=Style.TONE3, neutral_tone_with_five=True))
+        text_pinyin_norm_ntnu =pinyinizer(text_norm_ntnu)
         print('Pinyin with NTNU normalization: ')
-        print(pinyin_norm_ntnu)
+        print(text_pinyin_norm_ntnu)
 
-        pinyin_norm_speechio = ' '.join(lazy_pinyin(norm_speechio, style=Style.TONE3, neutral_tone_with_five=True))
+        text_pinyin_norm_speechio = pinyinizer(text_norm_speechio)
         print('Pinyin with SpeechIO normalization: ')
-        print(pinyin_norm_speechio)
+        print(text_pinyin_norm_speechio)
+
+        text_pinyin_norm_ue = pinyinizer(text_norm_ue)
+        print('Pinyin with UltraEval normalization: ')
+        print(text_pinyin_norm_ue)
+
+        text_pinyin_norm_aditw = pinyinizer(text_norm_aditw)
+        print('Pinyin with ADI-TW normalization: ')
+        print(text_pinyin_norm_aditw)
+
+        text_pinyin_norm_wetext = pinyinizer(text_norm_wetext)
+        print('Pinyin with WeText normalization: ')
+        print(text_pinyin_norm_wetext)

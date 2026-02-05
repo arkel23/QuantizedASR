@@ -6,7 +6,7 @@ configs=("default" "default" "default" "default" "default" "default" "default" "
 
 splits=("test" "test" "test_meeting" "test_net" "train" "hsk1" "hsk2" "hsk3" "hsk4" "hsk5" "hsk6" "zh" "validated_without_test" "test" "test" "test" "test" "test")
 
-base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4"
+base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4 --chinese --eval_metrics cer bert"
 
 # Iterate through all combinations
 for i in "${!dataset_paths[@]}"; do

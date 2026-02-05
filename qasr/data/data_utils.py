@@ -9,6 +9,7 @@ except:
     AudioFlamingo3Processor = VoxtralProcessor
 
 from .normalizer import EnglishTextNormalizer, BasicMultilingualTextNormalizer
+from .normalize_chinese import ChineseNormalizer
 from .preprocess_specific_datasets import preprocess_dataset
 
 
@@ -97,11 +98,11 @@ def get_text(sample):
         )
 
 
-def make_normalizer(english=True, chinese=False):
+def make_normalizer(english=True, chinese=False, pinyin=False):
     if english:
         normalizer = EnglishTextNormalizer()
     elif chinese:
-        raise NotImplementedError
+        normalizer = ChineseNormalizer(pinyin=pinyin)
     else:
         normalizer = BasicMultilingualTextNormalizer()
     return normalizer
@@ -152,7 +153,10 @@ def load_data(
     return dataset, english
 
 
-def prepare_data(dataset, dataset_path, audio_col_name='audio', english=True, sampling_rate=16_000):
+def prepare_data(
+        dataset, dataset_path, audio_col_name='audio',
+        english=True, chinese=False, pinyin=False, sampling_rate=16_000
+    ):
     # also convert to a uniform format and may need to process from multichannel to single
     # Re-sample to 16kHz and normalise transcriptions
     dataset = dataset.cast_column(audio_col_name, Audio(sampling_rate=sampling_rate))
@@ -161,7 +165,7 @@ def prepare_data(dataset, dataset_path, audio_col_name='audio', english=True, sa
     dataset = preprocess_dataset(dataset, dataset_path)
 
     # normalize text
-    normalizer = make_normalizer(english)
+    normalizer = make_normalizer(english, chinese, pinyin)
     normalize = make_normalize_fn(normalizer)
     # the map function can take num_proc to control number of workers
     dataset = dataset.map(normalize)

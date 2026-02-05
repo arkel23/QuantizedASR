@@ -10,10 +10,14 @@ pip3 install torch torchvision
 # cuda 11.x requires driver >= 450
 # pip3 install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu118
 
-pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.0 iso639-lang PyYAML accelerate bert-score pypinyin
+pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.0 iso639-lang PyYAML accelerate bert-score pypinyin OpenCC==1.1.0
 
+
+# chinese related
 # some normalizers use OpenCC
-# pip install OpenCC==1.1.0
+# pip3 install OpenCC==1.1.0 pypinyin
+# pip3 install cn2an WeTextNormalizer==1.00
+# ultraeval-audio also uses zhconv for cantonese (yue)
 
 # recent version of datasets requires pyarrow > 21 which requires glib > 2.28
 # however most of our servers have version 2.27 or older glib
