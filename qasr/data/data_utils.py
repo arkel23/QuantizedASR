@@ -181,7 +181,9 @@ def load_and_prepare_dataset(args, warmup=False):
     args.audio_col_name = get_audio_col_name(args.dataset_path)
     dataset, english = load_data(args.dataset_path, args.dataset, args.split, args.streaming)
     dataset, normalizer = prepare_data(
-        dataset, args.dataset_path, args.audio_col_name, english, args.target_sampling_rate)
+        dataset, args.dataset_path, args.audio_col_name,
+        english, args.chinese, args.pinyin, args.target_sampling_rate
+    )
 
     if warmup:
         num = args.warmup_steps * args.batch_size
