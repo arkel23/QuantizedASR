@@ -4,20 +4,9 @@ import opencc
 from pypinyin import lazy_pinyin, Style
 
 try:
-    from tn.chinese.normalizer import Normalizer
-except:
-    print('WeTextProcessing not installed')
-
-try:
-    from .normalizer_zh_speechio import TextNorm
     from .normalizer_zh_ultraeval import TextNormUltraEval
-    from .normalizer_zh_ntnu import normalize_corpus
-    from .normalizer_zh_aditw import ADITWNormalizer
 except:
-    from normalizer_zh_speechio import TextNorm
     from normalizer_zh_ultraeval import TextNormUltraEval
-    from normalizer_zh_ntnu import normalize_corpus
-    from normalizer_zh_aditw import ADITWNormalizer
 
 
 class Pinyinizer:
@@ -78,6 +67,14 @@ class ChineseNormalizer:
         return text
 
 if __name__ == '__main__':
+    # import wetext when working with hf results in a lot of debugging logs while reading data
+    from tn.chinese.normalizer import Normalizer
+
+    from normalizer_zh_speechio import TextNorm
+    # from normalizer_zh_ultraeval import TextNormUltraEval
+    from normalizer_zh_ntnu import normalize_corpus
+    from normalizer_zh_aditw import ADITWNormalizer
+
     p = argparse.ArgumentParser()
 
     # normalizer options

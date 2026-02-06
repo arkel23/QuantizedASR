@@ -125,6 +125,11 @@ def parse_args():
     if 'Qwen2.5-Omni' in args.model_id:
         args.batch_size = 1
 
+    if any([model_family in args.model_id for model_family in [
+        'Qwen', 'lite-whisper']]) and args.force_asr_language is None:
+        args.force_asr_language = 'en'
+        print('If force_asr_language is None, Qwen2/2.5 and lite-whisper models default to English')
+
     return args
 
 

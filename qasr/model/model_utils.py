@@ -206,7 +206,7 @@ def load_model_and_processor(args):
             gen_kwargs['task'] = 'transcribe'
 
         if 'lite-whisper' in args.model_id:
-            gen_kwargs['language'] = 'en' if not args.force_asr_language else args.force_asr_language
+            gen_kwargs['language'] = args.force_asr_language
             gen_kwargs['task'] = 'transcribe'
             gen_kwargs['generation_config'] = GenerationConfig.from_pretrained('openai/whisper-large-v3-turbo')
 

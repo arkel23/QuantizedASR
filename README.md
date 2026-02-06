@@ -40,6 +40,7 @@ TwinkStart/air-chat default test
 
 
 TwinkStart/AISHELL-1 default test
+# this one fails in the hpc server
 TwinkStart/kespeech default test
 TwinkStart/WenetSpeech default test_meeting
 TwinkStart/WenetSpeech default test_net
@@ -63,6 +64,9 @@ adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien default train
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien default test
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka default train
 adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka default test
+
+TwinkStart/CommonVoice_15 default yue
+TwinkStart/CommonVoice_15 default zh
 
 
 
@@ -116,9 +120,6 @@ nithinraok/asr-leaderboard-datasets mls_pt test
 TwinkStart/CommonVoice_15 default en
 TwinkStart/CommonVoice_15 default fr
 
-TwinkStart/CommonVoice_15 default yue
-TwinkStart/CommonVoice_15 default zh
-
 TwinkStart/facebook_multilingual_librispeech default mls_dutch
 TwinkStart/facebook_multilingual_librispeech default mls_french
 TwinkStart/facebook_multilingual_librispeech default mls_german
@@ -126,8 +127,6 @@ TwinkStart/facebook_multilingual_librispeech default mls_italian
 TwinkStart/facebook_multilingual_librispeech default mls_polish
 TwinkStart/facebook_multilingual_librispeech default mls_portuguese
 TwinkStart/facebook_multilingual_librispeech default mls_spanish
-
-OmniAICreator/ASMR-Archive-Processed default train
 
 
 espnet/floras monolingual train
@@ -145,6 +144,8 @@ distil-whisper/rev16 full test
 distil-whisper/rev16 whisper_subset test
 distil_whisper/tedlium-long-form default validation
 
+
+OmniAICreator/ASMR-Archive-Processed default train
 
 # not suitable for ASR
 TwinkStart/MMAU default v05.15.25
@@ -175,8 +176,8 @@ ibm-granite/granite-speech-3.3-8b
 nyrahealth/CrisperWhisper
 
 # update 01/26
-# need to set language and task in advance for lite-whisper
-# need to set transcription length masks for moonshine
+# need to set language and task in advance for lite-whisper (manual)
+# need to set transcription length masks for moonshine (automatic)
 efficient-speech/lite-whisper-large-v3-acc
 efficient-speech/lite-whisper-large-v3
 efficient-speech/lite-whisper-large-v3-fast
@@ -189,12 +190,16 @@ usefulsensors/moonshine-tiny
 # update 01/27
 Qwen/Qwen2.5-Omni-7B 
 
-# partial (does not match reported results)
-# nvidia is probably due to output format: includes prefixes such as the audio is
-nvidia/audio-flamingo-3-hf
-# unsure about the issue with qwen2-audio but the results are okay-ish
+# unsure about the issue with qwen2-audio but the results are okay-ish (in English)
+# in Chinese match papers performance
 Qwen/Qwen2-Audio-7B
 Qwen/Qwen2-Audio-7B-Instruct
+
+# partial (does not match reported results)
+# also needs an updated transformers (v5 transformers)
+# nvidia is probably due to output format: includes prefixes such as the audio is
+nvidia/audio-flamingo-3-hf
+
 ```
 
 To add:
