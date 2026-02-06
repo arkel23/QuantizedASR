@@ -51,7 +51,9 @@ def is_target_text_in_range(ref):
 
 
 def get_audio_col_name(dataset_path):
-    if 'adi-gov-tw' in dataset_path:
+    if 'dataset-hakka' in dataset_path:
+        audio_col_name = 'wav'
+    elif 'adi-gov-tw' in dataset_path:
         audio_col_name = 'mp3'
     elif 'ASMR' in dataset_path:
         audio_col_name = 'flac'

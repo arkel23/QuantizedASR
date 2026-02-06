@@ -12,6 +12,6 @@ base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samp
 for i in "${!dataset_paths[@]}"; do
     # Execute the command
     cmd="$base_cmd --dataset_path ${dataset_paths[$i]} --dataset ${configs[$i]} --split ${splits[$i]}"
-    echo "Running: $cmd"
+    echo "$cmd"
     $cmd
 done

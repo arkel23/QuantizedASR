@@ -1,0 +1,17 @@
+#!/bin/bash
+
+dataset_paths=("nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/CommonVoice_15" "TwinkStart/CommonVoice_15")
+
+dataset_configs=("fleurs_bg" "fleurs_cs" "fleurs_da" "fleurs_de" "fleurs_el" "fleurs_en" "fleurs_es" "fleurs_et" "fleurs_fi" "fleurs_fr" "fleurs_hr" "fleurs_hu" "fleurs_it" "fleurs_lt" "fleurs_lv" "fleurs_mt" "fleurs_nl" "fleurs_pl" "fleurs_pt" "fleurs_ro" "fleurs_ru" "fleurs_sk" "fleurs_sl" "fleurs_sv" "fleurs_uk" "mcv_de" "mcv_en" "mcv_es" "mcv_et" "mcv_fr" "mcv_it" "mcv_lv" "mcv_nl" "mcv_pt" "mcv_ru" "mcv_sl" "mcv_sv" "mcv_uk" "mls_es" "mls_fr" "mls_it" "mls_nl" "mls_pl" "mls_pt" "default" "default" "default" "default" "default" "default" "default" "default" "default")
+
+dataset_splits=("test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "mls_dutch" "mls_dutch" "mls_dutch" "mls_dutch" "mls_dutch" "mls_dutch" "mls_dutch" "en" "fr")
+
+base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4 --model_id openai/whisper-tiny"
+
+# Iterate through all combinations
+for i in "${!dataset_paths[@]}"; do
+    # Execute the command
+    cmd="$base_cmd --dataset_path ${dataset_paths[$i]} --dataset ${configs[$i]} --split ${splits[$i]}"
+    echo "$cmd"
+    $cmd
+done

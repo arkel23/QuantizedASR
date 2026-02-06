@@ -2,7 +2,11 @@ import argparse
 
 import opencc
 from pypinyin import lazy_pinyin, Style
-from tn.chinese.normalizer import Normalizer
+
+try:
+    from tn.chinese.normalizer import Normalizer
+except:
+    print('WeTextProcessing not installed')
 
 try:
     from .normalizer_zh_speechio import TextNorm
@@ -142,13 +146,16 @@ if __name__ == '__main__':
 
     normalizer_aditw = ADITWNormalizer()
 
-    normalizer_wetext = Normalizer(
-        remove_interjections=False,
-        remove_erhua=False,
-        traditional_to_simple=True,
-        remove_puncts=True,
-        full_to_half=True,
-    )
+    try:
+        normalizer_wetext = Normalizer(
+            remove_interjections=False,
+            remove_erhua=False,
+            traditional_to_simple=True,
+            remove_puncts=True,
+            full_to_half=True,
+        )
+    except:
+        normalizer_wetext = normalizer
 
     cc_mode = f'{args.cc_mode}.json' if args.cc_mode else 's2t.json'
     converter = opencc.OpenCC(cc_mode)
