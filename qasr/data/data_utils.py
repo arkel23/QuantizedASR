@@ -100,11 +100,11 @@ def get_text(sample):
         )
 
 
-def make_normalizer(english=True, chinese=False, pinyin=False):
+def make_normalizer(english=True, chinese=False):
     if english:
         normalizer = EnglishTextNormalizer()
     elif chinese:
-        normalizer = ChineseNormalizer(pinyin=pinyin)
+        normalizer = ChineseNormalizer()
     else:
         normalizer = BasicMultilingualTextNormalizer()
     return normalizer
@@ -157,7 +157,7 @@ def load_data(
 
 def prepare_data(
         dataset, dataset_path, audio_col_name='audio',
-        english=True, chinese=False, pinyin=False, sampling_rate=16_000
+        english=True, chinese=False, sampling_rate=16_000
     ):
     # also convert to a uniform format and may need to process from multichannel to single
     # Re-sample to 16kHz and normalise transcriptions
@@ -167,7 +167,7 @@ def prepare_data(
     dataset = preprocess_dataset(dataset, dataset_path)
 
     # normalize text
-    normalizer = make_normalizer(english, chinese, pinyin)
+    normalizer = make_normalizer(english, chinese)
     normalize = make_normalize_fn(normalizer)
     # the map function can take num_proc to control number of workers
     dataset = dataset.map(normalize)
@@ -184,7 +184,7 @@ def load_and_prepare_dataset(args, warmup=False):
     dataset, english = load_data(args.dataset_path, args.dataset, args.split, args.streaming)
     dataset, normalizer = prepare_data(
         dataset, args.dataset_path, args.audio_col_name,
-        english, args.chinese, args.pinyin, args.target_sampling_rate
+        english, args.chinese, args.target_sampling_rate
     )
 
     if warmup:
