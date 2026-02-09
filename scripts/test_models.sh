@@ -1,13 +1,40 @@
 #!/bin/bash
 
-models=("openai/whisper-tiny.en" "openai/whisper-small.en" "openai/whisper-base.en" "openai/whisper-medium.en" "openai/whisper-large" "openai/whisper-large-v2" "openai/whisper-large-v3" "distil-whisper/distil-medium.en" "distil-whisper/distil-large-v2" "distil-whisper/distil-large-v3" "mistralai/Voxtral-Mini-3B-2507" "mistralai/Voxtral-Small-24B-2507" "ibm-granite/granite-speech-3.3-2b" "ibm-granite/granite-speech-3.3-8b" "nyrahealth/CrisperWhisper" "Qwen/Qwen2.5-Omni-7B" "Qwen/Qwen2-Audio-7B" "Qwen/Qwen2-Audio-7B-Instruct")
+MODEL_CONFIGS=(
+    "whisper_tiny_en.yaml"
+    "whisper_small_en.yaml"
+    "whisper_base_en.yaml"
+    "whisper_medium_en.yaml"
+    "whisper_large.yaml"
+    "whisper_large_v2.yaml"
+    "whisper_large_v3.yaml"
+    "distil_whisper_medium_en.yaml"
+    "distil_whisper_large_v2.yaml"
+    "distil_whisper_large_v3.yaml"
+    "nyrahealth_crisper_whisper.yaml"
+    "lite_whisper_large_v3_acc.yaml"
+    "lite_whisper_large_v3.yaml"
+    "lite_whisper_large_v3_fast.yaml"
+    "lite_whisper_large_v3_turbo_acc.yaml"
+    "lite_whisper_large_v3_turbo.yaml"
+    "lite_whisper_large_v3_turbo_fast.yaml"
+    "moonshine_tiny.yaml"
+    "moonshine_base.yaml"
+    "voxtral_mini_3b.yaml"
+    "voxtral_small_24b.yaml"
+    "granite_speech_2b.yaml"
+    "granite_speech_8b.yaml"
+    "qwen_25_omni_7b.yaml"
+    "qwen_2_audio_7b.yaml"
+    "qwen_2_audio_7b_instruct.yaml"
+)
 
 base_cmd="python -m tools.evaluate --serial 997 --warmup_steps 2 --max_eval_samples 4 --batch_size 2"
 
 # Iterate through all combinations
-for i in "${!models[@]}"; do
+for model in "${MODEL_CONFIGS[@]}"; do
     # Execute the command
-    cmd="$base_cmd --model_id ${models[$i]}"
+    cmd="$base_cmd --config configs/models/$model"
     echo "$cmd"
     $cmd
 done

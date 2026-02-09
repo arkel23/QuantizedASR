@@ -1,0 +1,4 @@
+model_id: 'Qwen/Qwen2-Audio-7B-Instruct'
+max_new_tokens: 200
+force_asr_language: 'en'
+

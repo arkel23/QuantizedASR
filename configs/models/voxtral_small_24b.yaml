@@ -1,0 +1,3 @@
+model_id: 'mistralai/Voxtral-Small-24B-2507'
+max_new_tokens: 200
+

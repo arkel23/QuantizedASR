@@ -1,0 +1,3 @@
+model_id: 'mistralai/Voxtral-Mini-3B-2507'
+max_new_tokens: 200
+# act_dtype: 'bfloat16'

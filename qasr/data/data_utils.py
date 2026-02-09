@@ -6,7 +6,7 @@ try:
     from transformers import AudioFlamingo3Processor
 except:
     # placeholder way to make sure it is a lalm style processor
-    AudioFlamingo3Processor = VoxtralProcessor
+    AudioFlamingo3Processor = None
 
 from .normalizer import EnglishTextNormalizer, BasicMultilingualTextNormalizer
 from .normalizer_chinese import ChineseNormalizer

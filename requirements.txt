@@ -10,7 +10,8 @@ pip3 install torch torchvision
 # cuda 11.x requires driver >= 450
 # pip3 install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu118
 
-pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.0 iso639-lang PyYAML accelerate bert-score pypinyin OpenCC==1.1.0 WeTextNormalizer==1.00 cn2an
+# pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.0 iso639-lang PyYAML accelerate bert-score pypinyin OpenCC==1.1.0 WeTextNormalizer==1.00 cn2an
+pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.0 iso639-lang PyYAML accelerate bert-score pypinyin OpenCC==1.1.0
 
 
 # chinese related
@@ -47,6 +48,7 @@ pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.
 
 # when using granite need
 # pip3 install torchaudio peft
+# pip3 install torchaudio==2.9.1 --index-url https://download.pytorch.org/whl/cu130
 
 # for audio-flamingo
 # need to clone transformers and install locally or transformers>5

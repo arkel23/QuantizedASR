@@ -91,7 +91,7 @@ def parse_args():
     parser.add_argument('--compile_mode', type=str, default='max-autotune')
     parser.add_argument('--flash_attn', action='store_true',
                         help='only available for 5090/h100 with certain models')
-    parser.add_argument('--act_dtype', type=str, default=None,
+    parser.add_argument('--act_dtype', type=str, default='bfloat16',
                         choices=['bfloat16', 'float16', 'float32'])
     parser.add_argument('--float32_matmul_prec', type=str, default=None,
                         choices=['medium', 'high', 'highest'])

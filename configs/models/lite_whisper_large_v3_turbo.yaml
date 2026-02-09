@@ -1,0 +1,2 @@
+model_id: 'efficient-speech/lite-whisper-large-v3-turbo'
+force_asr_language: 'en'

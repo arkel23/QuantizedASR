@@ -1,0 +1,4 @@
+quant_config: 'torchao'
+quant_dtype_weights: 'int8'
+quant_dtype_acts: 'int8'
+
