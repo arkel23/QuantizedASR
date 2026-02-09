@@ -1,14 +1,14 @@
 #!/bin/bash
 
 MODEL_CONFIGS=(
-    "whisper_tiny_en.yaml"
-    "whisper_small_en.yaml"
-    "whisper_base_en.yaml"
-    "whisper_medium_en.yaml"
+    "whisper_tiny.yaml"
+    "whisper_small.yaml"
+    "whisper_base.yaml"
+    "whisper_medium.yaml"
     "whisper_large.yaml"
     "whisper_large_v2.yaml"
     "whisper_large_v3.yaml"
-    "distil_whisper_medium_en.yaml"
+    "whisper_large_v3_turbo.yaml"
     "distil_whisper_large_v2.yaml"
     "distil_whisper_large_v3.yaml"
     "nyrahealth_crisper_whisper.yaml"
