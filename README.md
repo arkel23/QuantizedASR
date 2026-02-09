@@ -209,6 +209,7 @@ canary family
 parakeet family
 stepaudio-r1
 ultravox
+qwen3 omni/qwen3 asr
 ```
 
 Autoregressive LALMs such as Voxtral or Granite require adjusting max_new_tokens to at least 200 (number used by Granite in paper)

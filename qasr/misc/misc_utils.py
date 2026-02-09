@@ -1,6 +1,7 @@
 import os
 import argparse
 
+from omegaconf import OmegaConf
 import yaml
 import wandb
 import torch
@@ -8,8 +9,16 @@ import torch
 
 def load_config_from_yaml(yaml_path):
     """Load config from YAML file"""
-    with open(yaml_path, 'r') as f:
-        return yaml.safe_load(f)
+    if isinstance(yaml_path, str):
+        with open(yaml_path, 'r') as f:
+            return yaml.safe_load(f)
+
+    elif isinstance(yaml_path, list):
+        base_cfg = OmegaConf.load(yaml_path[0])
+        for cfg_path in yaml_path[1:]:
+            yaml_cfg = OmegaConf.load(cfg_path)
+            base_cfg = OmegaConf.merge(base_cfg, yaml_cfg)
+        return base_cfg
 
 
 def merge_yaml_with_args(parser, yaml_config):
@@ -37,7 +46,7 @@ def merge_yaml_with_args(parser, yaml_config):
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--config', type=str, default=None, 
+    parser.add_argument('--config', type=str, default=None, nargs='+',
                        help='Path to YAML config file')
 
     parser.add_argument('--results_dir', type=str, default='results')

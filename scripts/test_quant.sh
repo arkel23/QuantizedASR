@@ -26,6 +26,8 @@ CONFIG_FILES=(
     "torchao_wfloat8.yaml"
 )
 
+# torchao_wint4 requires fbgemm
+# quanto wint2/4/wfloat8 require cuda support
 base_cmd="python -m tools.evaluate --serial 998 --warmup_steps 2 --max_eval_samples 4"
 
 # Iterate through all combinations
