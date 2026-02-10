@@ -3,9 +3,6 @@
 CONFIG_FILES=(
     "bnb_w4.yaml"
     "bnb_w8.yaml"
-    "quanto_wfloat8.yaml"
-    "quanto_wint2.yaml"
-    "quanto_wint4.yaml"
     "quanto_wint8.yaml"
     "hqq_wint1.yaml"
     "hqq_wint2.yaml"
@@ -26,8 +23,12 @@ CONFIG_FILES=(
     "torchao_wfloat8.yaml"
 )
 
-# torchao_wint4 requires fbgemm
-# quanto wint2/4/wfloat8 require cuda support
+    # "torchao_wint8_fbgemm.yaml"
+# torchao_wint4_fbgemm requires fbgemm and should have proper kernels for acceleration
+    # "quanto_wfloat8.yaml"
+    # "quanto_wint2.yaml"
+    # "quanto_wint4.yaml"
+# quanto wint2/4/wfloat8 require cuda support (works in 5090 but not in hpc)
 base_cmd="python -m tools.evaluate --serial 998 --warmup_steps 2 --max_eval_samples 4"
 
 # Iterate through all combinations

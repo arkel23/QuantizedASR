@@ -1,0 +1,4 @@
+dataset_path: 'TwinkStart/facebook_multilingual_librispeech'
+dataset: 'default'
+split: 'mls_polish'
+force_asr_language: 'pl'

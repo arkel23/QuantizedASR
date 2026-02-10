@@ -1,0 +1,3 @@
+dataset_path: 'TwinkStart/speech-triavia-qa'
+dataset: 'default'
+split: 'test'

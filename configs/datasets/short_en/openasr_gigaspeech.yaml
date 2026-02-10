@@ -1,0 +1,3 @@
+dataset_path: 'hf-audio/esb-datasets-test-only-sorted'
+dataset: 'gigaspeech'
+split: 'test'

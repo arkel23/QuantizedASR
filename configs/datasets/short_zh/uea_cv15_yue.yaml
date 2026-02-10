@@ -1,0 +1,8 @@
+dataset_path: 'TwinkStart/CommonVoice_15'
+dataset: 'default'
+split: 'yue'
+chinese: true
+eval_metrics:
+- cer
+- bert
+force_asr_language: 'zh'

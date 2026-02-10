@@ -1,0 +1,7 @@
+dataset_path: 'distil-whisper/tedlium-long-form'
+dataset: 'default'
+split: 'validation'
+long_form: true
+long_form_tricks: true
+eval_metrics:
+- wer_all

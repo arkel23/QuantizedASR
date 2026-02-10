@@ -1,0 +1,4 @@
+dataset_path: 'nithinraok/asr-leaderboard-datasets'
+dataset: 'mls_pl'
+split: 'test'
+force_asr_language: 'pl'

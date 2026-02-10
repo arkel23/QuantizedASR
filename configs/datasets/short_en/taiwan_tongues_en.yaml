@@ -1,0 +1,3 @@
+dataset_path: 'adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-en'
+dataset: 'default'
+split: 'test'

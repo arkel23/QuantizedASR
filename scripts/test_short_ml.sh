@@ -1,17 +1,67 @@
 #!/bin/bash
 
-dataset_paths=("nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "nithinraok/asr-leaderboard-datasets" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/facebook_multilingual_librispeech" "TwinkStart/CommonVoice_15" "TwinkStart/CommonVoice_15")
+CONFIG_FILES=(
+    "openasr_ml_fleurs_bg.yaml"
+    "openasr_ml_fleurs_cs.yaml"
+    "openasr_ml_fleurs_da.yaml"
+    "openasr_ml_fleurs_de.yaml"
+    "openasr_ml_fleurs_el.yaml"
+    "openasr_ml_fleurs_en.yaml"
+    "openasr_ml_fleurs_es.yaml"
+    "openasr_ml_fleurs_et.yaml"
+    "openasr_ml_fleurs_fi.yaml"
+    "openasr_ml_fleurs_fr.yaml"
+    "openasr_ml_fleurs_hr.yaml"
+    "openasr_ml_fleurs_hu.yaml"
+    "openasr_ml_fleurs_it.yaml"
+    "openasr_ml_fleurs_lt.yaml"
+    "openasr_ml_fleurs_lv.yaml"
+    "openasr_ml_fleurs_mt.yaml"
+    "openasr_ml_fleurs_nl.yaml"
+    "openasr_ml_fleurs_pl.yaml"
+    "openasr_ml_fleurs_pt.yaml"
+    "openasr_ml_fleurs_ro.yaml"
+    "openasr_ml_fleurs_ru.yaml"
+    "openasr_ml_fleurs_sk.yaml"
+    "openasr_ml_fleurs_sl.yaml"
+    "openasr_ml_fleurs_sv.yaml"
+    "openasr_ml_fleurs_uk.yaml"
+    "openasr_ml_mcv_de.yaml"
+    "openasr_ml_mcv_en.yaml"
+    "openasr_ml_mcv_es.yaml"
+    "openasr_ml_mcv_et.yaml"
+    "openasr_ml_mcv_fr.yaml"
+    "openasr_ml_mcv_it.yaml"
+    "openasr_ml_mcv_lv.yaml"
+    "openasr_ml_mcv_nl.yaml"
+    "openasr_ml_mcv_pt.yaml"
+    "openasr_ml_mcv_ru.yaml"
+    "openasr_ml_mcv_sl.yaml"
+    "openasr_ml_mcv_sv.yaml"
+    "openasr_ml_mcv_uk.yaml"
+    "openasr_ml_mls_es.yaml"
+    "openasr_ml_mls_fr.yaml"
+    "openasr_ml_mls_it.yaml"
+    "openasr_ml_mls_nl.yaml"
+    "openasr_ml_mls_pl.yaml"
+    "openasr_ml_mls_pt.yaml"
+    "uea_mls_dutch.yaml"
+    "uea_mls_french.yaml"
+    "uea_mls_german.yaml"
+    "uea_mls_italian.yaml"
+    "uea_mls_polish.yaml"
+    "uea_mls_portuguese.yaml"
+    "uea_mls_spanish.yaml"
+    "uea_cv15_en.yaml"
+    "uea_cv15_fr.yaml"
+)
 
-configs=("fleurs_bg" "fleurs_cs" "fleurs_da" "fleurs_de" "fleurs_el" "fleurs_en" "fleurs_es" "fleurs_et" "fleurs_fi" "fleurs_fr" "fleurs_hr" "fleurs_hu" "fleurs_it" "fleurs_lt" "fleurs_lv" "fleurs_mt" "fleurs_nl" "fleurs_pl" "fleurs_pt" "fleurs_ro" "fleurs_ru" "fleurs_sk" "fleurs_sl" "fleurs_sv" "fleurs_uk" "mcv_de" "mcv_en" "mcv_es" "mcv_et" "mcv_fr" "mcv_it" "mcv_lv" "mcv_nl" "mcv_pt" "mcv_ru" "mcv_sl" "mcv_sv" "mcv_uk" "mls_es" "mls_fr" "mls_it" "mls_nl" "mls_pl" "mls_pt" "default" "default" "default" "default" "default" "default" "default" "default" "default")
-
-splits=("test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "test" "mls_dutch" "mls_dutch" "mls_dutch" "mls_dutch" "mls_dutch" "mls_dutch" "mls_dutch" "en" "fr")
-
-base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4 --model_id openai/whisper-tiny"
+base_cmd="python -m tools.evaluate --serial 993 --warmup_steps 2 --max_eval_samples 4 --model_id openai/whisper-tiny"
 
 # Iterate through all combinations
-for i in "${!dataset_paths[@]}"; do
+for cfg in "${CONFIG_FILES[@]}"; do
     # Execute the command
-    cmd="$base_cmd --dataset_path ${dataset_paths[$i]} --dataset ${configs[$i]} --split ${splits[$i]}"
+    cmd="$base_cmd --config configs/datasets/short_ml/$cfg"
     echo "$cmd"
     $cmd
 done

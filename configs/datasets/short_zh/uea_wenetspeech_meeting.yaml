@@ -1,0 +1,8 @@
+dataset_path: 'TwinkStart/WenetSpeech'
+dataset: 'default'
+split: 'test_meeting'
+chinese: true
+eval_metrics:
+- cer
+- bert
+force_asr_language: 'zh'

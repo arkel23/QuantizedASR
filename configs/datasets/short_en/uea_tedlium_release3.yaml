@@ -1,0 +1,3 @@
+dataset_path: 'TwinkStart/tedlium'
+dataset: 'release3'
+split: 'test'

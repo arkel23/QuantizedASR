@@ -1,0 +1,8 @@
+dataset_path: 'TwinkStart/speech-HSK'
+dataset: 'default'
+split: 'hsk5'
+chinese: true
+eval_metrics:
+- cer
+- bert
+force_asr_language: 'zh'

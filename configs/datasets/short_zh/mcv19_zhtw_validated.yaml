@@ -1,0 +1,8 @@
+dataset_path: 'JacobLinCool/common_voice_19_0_zh-TW'
+dataset: 'default'
+split: 'validated_without_test'
+chinese: true
+eval_metrics:
+- cer
+- bert
+force_asr_language: 'zh'

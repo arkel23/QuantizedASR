@@ -1,3 +1,3 @@
 quant_config: 'torchao'
-quant_dtype_weights: 'int4'
+quant_dtype_weights: '4'
 

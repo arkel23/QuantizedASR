@@ -1,0 +1,4 @@
+dataset_path: 'nithinraok/asr-leaderboard-datasets'
+dataset: 'fleurs_el'
+split: 'test'
+force_asr_language: 'el'

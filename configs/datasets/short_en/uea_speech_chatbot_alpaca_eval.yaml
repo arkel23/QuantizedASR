@@ -1,0 +1,3 @@
+dataset_path: 'TwinkStart/speech-chatbot-alpaca-eval'
+dataset: 'default'
+split: 'test'

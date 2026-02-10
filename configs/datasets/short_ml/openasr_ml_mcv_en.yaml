@@ -1,0 +1,4 @@
+dataset_path: 'nithinraok/asr-leaderboard-datasets'
+dataset: 'mcv_en'
+split: 'test'
+force_asr_language: 'en'

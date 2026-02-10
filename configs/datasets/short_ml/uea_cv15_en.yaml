@@ -1,0 +1,4 @@
+dataset_path: 'TwinkStart/CommonVoice_15'
+dataset: 'default'
+split: 'en'
+force_asr_language: 'en'

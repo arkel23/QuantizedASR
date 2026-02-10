@@ -1,17 +1,32 @@
 #!/bin/bash
 
-dataset_paths=("TwinkStart/AISHELL-1" "TwinkStart/kespeech" "TwinkStart/WenetSpeech" "TwinkStart/WenetSpeech" "TwinkStart/speech-CMMLU" "TwinkStart/speech-HSK" "TwinkStart/speech-HSK" "TwinkStart/speech-HSK" "TwinkStart/speech-HSK" "TwinkStart/speech-HSK" "TwinkStart/speech-HSK" "TwinkStart/CommonVoice_15" "JacobLinCool/common_voice_19_0_zh-TW" "JacobLinCool/common_voice_19_0_zh-TW" "adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-zhtw" "adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hokkien" "adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka" "TwinkStart/CommonVoice_15")
+CONFIG_FILES=(
+    "uea_aishell1.yaml"
+    "uea_kespeech.yaml"
+    "uea_wenetspeech_meeting.yaml"
+    "uea_wenetspeech_net.yaml"
+    "uea_cmmlu.yaml"
+    "uea_hsk1.yaml"
+    "uea_hsk2.yaml"
+    "uea_hsk3.yaml"
+    "uea_hsk4.yaml"
+    "uea_hsk5.yaml"
+    "uea_hsk6.yaml"
+    "uea_cv15_zh.yaml"
+    "mcv19_zhtw_validated.yaml"
+    "mcv19_zhtw_test.yaml"
+    "taiwan_tongues_zhtw.yaml"
+    "taiwan_tongues_hokkien.yaml"
+    "taiwan_tongues_hakka.yaml"
+    "uea_cv15_yue.yaml"
+)
 
-configs=("default" "default" "default" "default" "default" "default" "default" "default" "default" "default" "default" "default" "default" "default" "default" "default" "default" "default")
-
-splits=("test" "test" "test_meeting" "test_net" "train" "hsk1" "hsk2" "hsk3" "hsk4" "hsk5" "hsk6" "zh" "validated_without_test" "test" "test" "test" "test" "yue")
-
-base_cmd="python -m tools.evaluate --serial 999 --warmup_steps 2 --max_eval_samples 4 --chinese --eval_metrics cer bert --model_id openai/whisper-tiny --force_asr_language zh"
+base_cmd="python -m tools.evaluate --serial 992 --warmup_steps 2 --max_eval_samples 4"
 
 # Iterate through all combinations
-for i in "${!dataset_paths[@]}"; do
+for cfg in "${CONFIG_FILES[@]}"; do
     # Execute the command
-    cmd="$base_cmd --dataset_path ${dataset_paths[$i]} --dataset ${configs[$i]} --split ${splits[$i]}"
+    cmd="$base_cmd --config configs/datasets/short_zh/$cfg"
     echo "$cmd"
     $cmd
 done

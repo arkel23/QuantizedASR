@@ -1,0 +1,8 @@
+dataset_path: 'espnet/floras'
+dataset: 'multilingual_ar'
+split: 'test'
+force_asr_language: 'ar'
+long_form: true
+long_form_tricks: true
+eval_metrics:
+- wer_all

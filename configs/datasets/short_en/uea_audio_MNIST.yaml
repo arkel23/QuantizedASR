@@ -1,0 +1,3 @@
+dataset_path: 'TwinkStart/audio-MNIST'
+dataset: 'default'
+split: 'test'

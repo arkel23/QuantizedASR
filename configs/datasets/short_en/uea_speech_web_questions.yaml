@@ -1,0 +1,3 @@
+dataset_path: 'TwinkStart/speech-web-questions'
+dataset: 'default'
+split: 'test'

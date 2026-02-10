@@ -1,0 +1,7 @@
+dataset_path: 'distil-whisper/rev16'
+dataset: 'whisper_subset'
+split: 'test'
+long_form: true
+long_form_tricks: true
+eval_metrics:
+- wer_all
