@@ -12,7 +12,7 @@ pip3 install torch torchvision
 # pip3 install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu118
 
 # pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.0 iso639-lang PyYAML accelerate bert-score pypinyin OpenCC==1.1.0 WeTextNormalizer==1.00 cn2an
-pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.0 iso639-lang PyYAML accelerate bert-score pypinyin OpenCC==1.1.0 omegaconf
+pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.0 iso639-lang PyYAML accelerate bert-score pypinyin OpenCC==1.1.0 omegaconf taibun ToJyutping
 
 
 # chinese related
@@ -20,6 +20,8 @@ pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.
 # pip3 install OpenCC==1.1.0 pypinyin
 # pip3 install cn2an WeTextProcessing==1.00
 # ultraeval-audio also uses zhconv for cantonese (yue)
+# for cantonese may use 
+# pip3 install ToJyutping
 
 # recent version of datasets requires pyarrow > 21 which requires glib > 2.28
 # however most of our servers have version 2.27 or older glib
@@ -45,7 +47,7 @@ pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.
 # need to use conda to install toolkit independently
 # version should match pytorch version used
 # this doesnt work, but maybe if used before installatin of
-# conda install -c nvidia cuda-toolkit=13.0 cuda-nvcc=13.0 -y
+# conda install -c nvidia cuda-toolkit=13.0 cuda-nvcc=13.0 --y
 
 # other quant types
 # pip3 install hqq
@@ -63,31 +65,3 @@ pip3 install transformers datasets[audio] evaluate tqdm pyyaml wandb jiwer==3.1.
 # for phi4
 # pip3 install backoff scipy
 # pip3 install flash-attn --no-build-isolation
-
-# torch>=2.1
-# transformers>=4.36
-# datasets>=2.16
-# evaluate>=0.4
-# soundfile
-# numpy
-# tqdm
-# pyyaml
-# jiwer==3.1.0
-
-
-# accelerate                1.12.0
-# datasets                  4.4.2
-# evaluate                  0.4.6
-# huggingface-hub           0.36.0
-# ipython                   9.7.0
-# jiwer                     3.1.0
-# mistral_common            1.8.8
-# peft                      0.18.0
-# PyYAML                    6.0.3
-# safetensors               0.7.0
-# soundfile                 0.13.1
-# torch                     2.9.1+cu130
-# torchcodec                0.9.1
-# torchvision               0.24.1+cu130
-# tqdm                      4.67.1
-# transformers              4.57.3

@@ -1,8 +1,0 @@
-dataset_path: 'espnet/floras'
-dataset: 'multilingual_en'
-split: 'test'
-force_asr_language: 'en'
-long_form: true
-long_form_tricks: true
-eval_metrics:
-- wer_all

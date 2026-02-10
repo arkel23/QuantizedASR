@@ -13,7 +13,7 @@ class Pinyinizer:
     def __init__(
         self,
         style = 'TONE3',
-        neutral_tone_with_five: bool = False,
+        neutral_tone_with_five: bool = True,
     ):
 
         self.style = getattr(Style, style, 'TONE3')

@@ -1,8 +1,6 @@
 #!/bin/bash
 
 CONFIG_FILES=(
-    "floras_en_dev.yaml"
-    "floras_en_test.yaml"
     "floras_ru_dev.yaml"
     "floras_ru_test.yaml"
     "floras_es_dev.yaml"

@@ -21,7 +21,7 @@ CONFIG_FILES=(
     "uea_cv15_yue.yaml"
 )
 
-base_cmd="python -m tools.evaluate --serial 992 --warmup_steps 2 --max_eval_samples 4"
+base_cmd="python -m tools.evaluate --serial 992 --warmup_steps 2 --max_eval_samples 4 --model_id openai/whisper-tiny"
 
 # Iterate through all combinations
 for cfg in "${CONFIG_FILES[@]}"; do
