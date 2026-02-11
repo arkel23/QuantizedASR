@@ -74,8 +74,11 @@ def compute_metrics(results, eval_metric):
             for k, v in scores.items():
                 if k != 'hashcode':
                     scores_dic[f'bert_{k}_mean'] = round(mean(scores[k]), 2)
-                    scores_dic[f'bert_{k}_std'] = round(stdev(scores[k]), 3)
-    
+                    try:
+                        scores_dic[f'bert_{k}_std'] = round(stdev(scores[k]), 3)
+                    except:
+                        scores_dic[f'bert_{k}_std'] = 0
+
         elif metric_name == 'ter':
             raise NotImplementedError
             for k, v in scores.items():

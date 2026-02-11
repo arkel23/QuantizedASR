@@ -393,6 +393,12 @@ def compute_and_log_metrics(results, model, args):
     else:
         max_memory = 0
 
+    try:
+        audio_length_s_std = stdev(results['audio_length_s'])
+    except:
+        audio_length_s_std = 0
+
+
     scores_dic.update({
         'rtfx': rtfx,
         'max_memory': max_memory,
@@ -400,7 +406,7 @@ def compute_and_log_metrics(results, model, args):
         # also include dataset stats
         'num_samples': len(results['audio_length_s']),
         'audio_length_s_mean': mean(results['audio_length_s']),
-        'audio_length_s_std': stdev(results['audio_length_s']),
+        'audio_length_s_std': audio_length_s_std,
         'audio_length_s_min': min(results['audio_length_s']),
         'audio_length_s_max': max(results['audio_length_s']),
     })
