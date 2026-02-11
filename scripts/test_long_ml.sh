@@ -81,14 +81,8 @@ CONFIG_FILES=(
     "floras_gl_test.yaml"
     "floras_bn_dev.yaml"
     "floras_bn_test.yaml"
-    "floras_bs_dev.yaml"
-    "floras_bs_test.yaml"
     "floras_cy_dev.yaml"
     "floras_cy_test.yaml"
-    "floras_ku_dev.yaml"
-    "floras_ku_test.yaml"
-    "floras_ky_dev.yaml"
-    "floras_ky_test.yaml"
     "floras_ka_dev.yaml"
     "floras_ka_test.yaml"
     "floras_az_dev.yaml"
@@ -100,6 +94,15 @@ CONFIG_FILES=(
 # whisper does not support esperanto (eo)
 #     "floras_eo_dev.yaml"
 #    "floras_eo_test.yaml"
+
+# does not output anything (filtered out?)
+    # "floras_bs_dev.yaml"
+    # "floras_bs_test.yaml"
+    # "floras_ku_dev.yaml"
+    # "floras_ku_test.yaml"
+    # "floras_ky_dev.yaml"
+    # "floras_ky_test.yaml"
+
 
 base_cmd="python -m tools.evaluate --serial 995 --warmup_steps 2 --max_eval_samples 4 --batch_size 2 --model_id openai/whisper-tiny"
 

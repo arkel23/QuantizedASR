@@ -1,5 +1,5 @@
-import datasets
 import jiwer
+import datasets
 import evaluate
 
 
@@ -77,7 +77,7 @@ class WERMetrics(evaluate.Metric):
             ],
         )
     
-    def _compute(self, predictions=None, references=None, concatenate_texts=True, return_all_metrics=True):
+    def _compute(self, references, predictions, concatenate_texts=True, return_all_metrics=True):
         if hasattr(jiwer, "compute_measures"):
             if concatenate_texts:
                 measures = jiwer.compute_measures(references, predictions)
