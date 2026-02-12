@@ -20,9 +20,12 @@ import evaluate
 
 try:
     from .wer import WERMetrics
-    from .tonal import TonalASRMetrics
 except:
     from wer import WERMetrics
+
+try:
+    from .tonal import TonalASRMetrics
+except:
     from tonal import TonalASRMetrics
 
 EMBEDDER = 'microsoft/deberta-large-mnli'
