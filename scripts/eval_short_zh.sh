@@ -21,7 +21,7 @@ CONFIG_FILES=(
     "uea_cv15_yue.yaml"
 )
 
-base_cmd="python -m tools.evaluate --serial 999"
+base_cmd="python -m tools.evaluate --serial 999 --batch_size 4"
 
 # Iterate through all combinations
 for cfg in "${CONFIG_FILES[@]}"; do
