@@ -90,10 +90,7 @@ def add_transcription_prompt_to_processor(processor, model_id, language='en'):
 
 def prepare_processor(args):
     if 'lite-whisper' in args.model_id:
-        # id = 'openai/whisper-large-v3-turbo' if 'turbo' in args.model_id else 'openai/whisper-large-v3'
         processor = AutoProcessor.from_pretrained('openai/whisper-large-v3-turbo', trust_remote_code=True)
-    # elif 'Qwen2_Omni' in args.model_id:
-    #     processor = Qwen2_5OmniProcessor.from_pretrained(args.model_id)
     else:
         processor = AutoProcessor.from_pretrained(args.model_id, trust_remote_code=True)
     processor = add_transcription_prompt_to_processor(processor, args.model_id, args.force_asr_language)
@@ -189,11 +186,9 @@ def load_model_and_processor(args):
 
             if args.long_form_tricks:
                 gen_kwargs.update({
-                    # 'max_length': 448,
                     # 'max_length': args.max_new_tokens,
                     # 'return_timestamps': True,
                     'condition_on_prev_tokens': False,
-                    # 'top_k': 0,
                     'compression_ratio_threshold': 1.35, # different compression threshold is used
                     'temperature': (0.0, 0.2, 0.4, 0.6, 0.8, 1.0),
                     'logprob_threshold': -1.0,

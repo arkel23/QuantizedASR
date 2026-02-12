@@ -4,5 +4,6 @@ split: 'train'
 chinese: true
 eval_metrics:
 - cer
+- ter
 - bert
 force_asr_language: 'zh'

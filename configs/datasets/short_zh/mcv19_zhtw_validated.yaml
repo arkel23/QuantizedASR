@@ -4,5 +4,6 @@ split: 'validated_without_test'
 chinese: true
 eval_metrics:
 - cer
+- ter
 - bert
 force_asr_language: 'zh'

@@ -6,11 +6,9 @@ from ToJyutping import get_jyutping_text
 from taibun import Converter
 
 try:
-    from .alignment import align_sequences, align_sequences_pinyin_hanzi
-    # from .tonal import get_base
+    from .alignment import align_sequences_pinyin_hanzi
 except:
-    from alignment import align_sequences, align_sequences_pinyin_hanzi
-    # from tonal import get_base
+    from alignment import align_sequences_pinyin_hanzi
 
 
 # not a valid character string, mostly for taiwanese
@@ -147,7 +145,6 @@ def pinyinize_results(references, predictions, pinyinizer: Pinyinizer, language=
             'predictions_finals': [],
         })
 
-    # i = 0
 
     for ref, pred in zip(references, predictions):
         pinyin_ref, base_ref = pinyinizer(ref)
@@ -171,23 +168,18 @@ def pinyinize_results(references, predictions, pinyinizer: Pinyinizer, language=
 
         #  initials (声母) and finals (韵母) only applies to mandarin
         if language == 'zh':
-            initials_ref = lazy_pinyin(ref, style=Style.INITIALS)
-            finals_ref = lazy_pinyin(pred, style=Style.FINALS)
+            initials_ref = ' '.join(lazy_pinyin(ref, style=Style.INITIALS))
+            finals_ref = ' '.join(lazy_pinyin(ref, style=Style.FINALS))
 
-            initials_pred = lazy_pinyin(ref, style=Style.INITIALS)
-            finals_pred = lazy_pinyin(pred, style=Style.FINALS)
+            initials_pred = ' '.join(lazy_pinyin(pred, style=Style.INITIALS))
+            finals_pred = ' '.join(lazy_pinyin(pred, style=Style.FINALS))
 
-            results_temp['references_initials'] = initials_ref
-            results_temp['references_finals'] = finals_ref
+            results_temp['references_initials'].append(initials_ref)
+            results_temp['references_finals'].append(finals_ref)
 
-            results_temp['predictions_initials'] = initials_pred
-            results_temp['predictions_finals'] = finals_pred
+            results_temp['predictions_initials'].append(initials_pred)
+            results_temp['predictions_finals'].append(finals_pred)
 
-        # i += 1
-        # if i > 20:
-        #     break
-
-    # print(results_temp)
 
     return results_temp
 

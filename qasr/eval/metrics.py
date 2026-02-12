@@ -20,9 +20,10 @@ import evaluate
 
 try:
     from .wer import WERMetrics
+    from .tonal import TonalASRMetrics
 except:
     from wer import WERMetrics
-
+    from tonal import TonalASRMetrics
 
 EMBEDDER = 'microsoft/deberta-large-mnli'
 
@@ -45,8 +46,7 @@ def compute_metrics(results, eval_metric):
         elif metric_name == 'bert':
             metric = evaluate.load('bertscore')
         elif metric_name == 'ter':
-            raise NotImplementedError
-            metric = TERMetrics()
+            metric = TonalASRMetrics()
 
         # Compute scores
         if metric_name in ['wer', 'cer', 'wer_all', 'ter']:
@@ -80,11 +80,11 @@ def compute_metrics(results, eval_metric):
                         scores_dic[f'bert_{k}_std'] = 0
 
         elif metric_name == 'ter':
-            raise NotImplementedError
             for k, v in scores.items():
-                if k in ['wer', 'mer', 'wil', 'wip']:
+                if k in ['confusion_matrix']:
+                    scores_dic[k] = v
+                else:
                     scores_dic[k] = round(v * 100, 2)
-
 
     return scores_dic
 
@@ -100,3 +100,8 @@ if __name__ == '__main__':
     compute_metrics(results, ['wer_all', 'cer'])
     compute_metrics(results, ['wer_all', 'cer', 'wer'])
     compute_metrics(results, ['wer_all', 'cer', 'bert'])
+
+    results['references'] = ["我沒咧驚", "我发现了问题", "你好世界"]
+    results['predictions'] = ["我沒驚", "我发线了问题", "你号世界"]
+    scores_dic = compute_metrics(results, ['cer', 'ter', 'bert'])
+    print(scores_dic)

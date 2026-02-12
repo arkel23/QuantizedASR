@@ -320,8 +320,6 @@ def make_benchmark_fn(model, processor, normalizer, model_input_name, gen_kwargs
         batch['transcription_time_s'] = minibatch_size * [runtime / minibatch_size]
         batch['audio_length_s'] = audio_lengths_s
         # print(preds, minibatch_size, runtime, audio_lengths_s, batch['audio_length_s'])
-        # batch['audio_length_s'] = 30
-        # print('audio_length_s:', batch['audio_length_s'])
 
         return batch
 
@@ -363,7 +361,7 @@ def evaluate_dataset(dataset, benchmark, args):
 
     # the map function happens in parallel and processes as a batch tensor/list
     # but this loop functions on a sample level 
-    # so each of the elements in results are single vlaues
+    # so each of the elements in results are single values
     for sample in tqdm(iter(dataset), desc='Samples...'):
         for k in results:
             results[k].append(sample[k])

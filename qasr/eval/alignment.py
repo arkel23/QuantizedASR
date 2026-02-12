@@ -49,14 +49,10 @@ def align_sequences(
         elif chunk.type == "delete":
             # Only ref has element
             token_pairs.extend(zip(r_span, [None] * len(r_span)))
-            # for r in r_span:
-            #     token_pairs.append((r, None))
 
         elif chunk.type == "insert":
             # Only hyp has element
             token_pairs.extend(zip([None] * len(h_span), h_span))
-            # for h in h_span:
-            #     token_pairs.append((None, h))
 
     return token_pairs
 
@@ -87,7 +83,6 @@ def align_sequences_pinyin_hanzi(
 
     # Convert AlignmentChunk objects to (ref, hyp) tuples
     token_pairs = []
-    # hanzi_pairs = []
 
     for chunk in alignment_chunks:
         # chunk has: type, ref_start_idx, ref_end_idx, hyp_start_idx, hyp_end_idx
@@ -103,8 +98,6 @@ def align_sequences_pinyin_hanzi(
             # Handle both same-length and different-length spans
             if len(r_span) == len(h_span):
                 token_pairs.extend(zip(r_span, h_span, r_span_hanzi, h_span_hanzi))
-                # token_pairs.extend(zip(r_span, h_span))
-                # hanzi_pairs.extend(zip(r_span_hanzi, h_span_hanzi))
             else:
                 # Different lengths: pad with None
                 for i in range(max(len(r_span), len(h_span))):
@@ -113,26 +106,15 @@ def align_sequences_pinyin_hanzi(
                     r_hanzi = r_span_hanzi[i] if i < len(r_span_hanzi) else None
                     h_hanzi = h_span_hanzi[i] if i < len(h_span_hanzi) else None
                     token_pairs.append((r, h, r_hanzi, h_hanzi))
-                    # token_pairs.append((r, h))
-                    # hanzi_pairs.append((r_hanzi, h_hanzi))
 
         elif chunk.type == "delete":
             # Only ref has element
             token_pairs.extend(zip(r_span, [None] * len(r_span), r_span_hanzi, [None] * len(r_span_hanzi)))
-            # token_pairs.extend(zip(r_span, [None] * len(r_span)))
-            # hanzi_pairs.extend(zip(r_span_hanzi, [None] * len(r_span_hanzi)))
-            # for r in r_span:
-            #     token_pairs.append((r, None))
 
         elif chunk.type == "insert":
             # Only hyp has element
             token_pairs.extend(zip([None] * len(h_span), h_span, [None] * len(h_span_hanzi), h_span_hanzi))
-            # token_pairs.extend(zip([None] * len(h_span), h_span))
-            # hanzi_pairs.extend(zip([None] * len(h_span_hanzi), h_span_hanzi))
-            # for h in h_span:
-            #     token_pairs.append((None, h))
 
-    # return token_pairs, hanzi_pairs
     return token_pairs
 
 

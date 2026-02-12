@@ -53,7 +53,7 @@ def parse_args():
     parser.add_argument('--serial', type=int, default=0)
     parser.add_argument('--device', type=int, default=0)
     parser.add_argument('--eval_metrics', type=str, nargs='+', default=['wer_all', 'bert'],
-                        choices=['wer_all', 'wer', 'cer', 'bert'])
+                        choices=['wer_all', 'wer', 'cer', 'bert', 'ter'])
 
     parser.add_argument('--force_asr_language', type=str, default=None)
     parser.add_argument('--long_form', action='store_true',

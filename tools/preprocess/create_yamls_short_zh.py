@@ -58,7 +58,7 @@ for i in range(len(dataset_paths)):
         "dataset": QuotedStr(configs[i]),
         "split": QuotedStr(splits[i]),
         "chinese": True,
-        "eval_metrics": ['cer', 'bert'],
+        "eval_metrics": ['cer', 'ter', 'bert'],
         "force_asr_language": QuotedStr("zh"),
     }
 
