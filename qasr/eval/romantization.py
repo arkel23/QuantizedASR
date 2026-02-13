@@ -169,15 +169,16 @@ def pinyinize_results(references, predictions, pinyinizer: Pinyinizer, language=
         #  initials (声母) and finals (韵母) only applies to mandarin
         if language == 'zh':
             initials_ref = ' '.join(lazy_pinyin(ref, style=Style.INITIALS))
-            finals_ref = ' '.join(lazy_pinyin(ref, style=Style.FINALS))
+            if initials_ref:
+                initials_pred = ' '.join(lazy_pinyin(pred, style=Style.INITIALS))
 
-            initials_pred = ' '.join(lazy_pinyin(pred, style=Style.INITIALS))
+                results_temp['references_initials'].append(initials_ref)
+                results_temp['predictions_initials'].append(initials_pred)
+
+            finals_ref = ' '.join(lazy_pinyin(ref, style=Style.FINALS))
             finals_pred = ' '.join(lazy_pinyin(pred, style=Style.FINALS))
 
-            results_temp['references_initials'].append(initials_ref)
             results_temp['references_finals'].append(finals_ref)
-
-            results_temp['predictions_initials'].append(initials_pred)
             results_temp['predictions_finals'].append(finals_pred)
 
 
