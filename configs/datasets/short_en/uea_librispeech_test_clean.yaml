@@ -1,4 +1,4 @@
 dataset_path: 'TwinkStart/librispeech'
 dataset: 'default'
 split: 'test_clean'
-english: true
+norm_english: true

@@ -1,4 +1,4 @@
 dataset_path: 'hf-audio/esb-datasets-test-only-sorted'
 dataset: 'librispeech'
 split: 'test.other'
-english: true
+norm_english: true

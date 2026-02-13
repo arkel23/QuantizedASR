@@ -1,4 +1,4 @@
 dataset_path: 'hf-audio/esb-datasets-test-only-sorted'
 dataset: 'tedlium'
 split: 'test'
-english: true
+norm_english: true

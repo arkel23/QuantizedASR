@@ -1,9 +1,10 @@
 dataset_path: 'adi-gov-tw/Taiwan-Tongues-ASR-CE-dataset-hakka'
 dataset: 'default'
 split: 'test'
-chinese: true
+norm_chinese: true
 eval_metrics:
 - cer
 - ter
 - bert
 force_asr_language: 'zh'
+language: hak

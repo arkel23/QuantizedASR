@@ -1,9 +1,10 @@
 dataset_path: 'TwinkStart/kespeech'
 dataset: 'default'
 split: 'test'
-chinese: true
+norm_chinese: true
 eval_metrics:
 - cer
 - ter
 - bert
 force_asr_language: 'zh'
+language: zh

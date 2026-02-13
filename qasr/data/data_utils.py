@@ -159,7 +159,8 @@ def prepare_data(
         dataset, dataset_path, audio_col_name='audio',
         english=True, chinese=False, sampling_rate=16_000
     ):
-    print(dataset, dataset_path, audio_col_name, english, chinese)
+    print('Dataset info: ', dataset, dataset_path, audio_col_name, english, chinese)
+
     # also convert to a uniform format and may need to process from multichannel to single
     # Re-sample to 16kHz and normalise transcriptions
     dataset = dataset.cast_column(audio_col_name, Audio(sampling_rate=sampling_rate))

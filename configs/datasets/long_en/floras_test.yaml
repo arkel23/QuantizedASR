@@ -1,7 +1,7 @@
 dataset_path: 'espnet/floras'
 dataset: 'monolingual'
 split: 'test'
-english: true
+norm_english: true
 long_form: true
 long_form_tricks: true
 eval_metrics:
