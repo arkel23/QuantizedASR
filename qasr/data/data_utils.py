@@ -13,19 +13,19 @@ from .normalizer_chinese import ChineseNormalizer
 from .preprocess_specific_datasets import preprocess_dataset
 
 
-DATASET_PATH_EN_LIST = [
-    'hf-audio', 'audio-MNIST', 'librispeech', 'tedlium', '-en', 'questions', 'speech-', 'air-chat',
-]
-DATASET_CONFIG_EN_LIST = ['_en', 'monolingual']
+# DATASET_PATH_EN_LIST = [
+#     'hf-audio', 'audio-MNIST', 'librispeech', 'tedlium', '-en', 'questions', 'speech-trivia', 'air-chat',
+# ]
+# DATASET_CONFIG_EN_LIST = ['_en', 'monolingual']
 
 
-def check_if_english(dataset_path='hf-audio/esb-datasets-test-only-sorted', dataset_config='ami', split='test'):
-    if (any([kw in dataset_path for kw in DATASET_PATH_EN_LIST]) or \
-        any([kw in dataset_config for kw in DATASET_CONFIG_EN_LIST]) or split == 'en'):
-        english = True
-    else:
-        english = False
-    return english
+# def check_if_english(dataset_path='hf-audio/esb-datasets-test-only-sorted', dataset_config='ami', split='test'):
+#     if (any([kw in dataset_path for kw in DATASET_PATH_EN_LIST]) or \
+#         any([kw in dataset_config for kw in DATASET_CONFIG_EN_LIST]) or split == 'en'):
+#         english = True
+#     else:
+#         english = False
+#     return english
 
 
 def prepare_filter_language(target_language='en'):
@@ -100,7 +100,7 @@ def get_text(sample):
         )
 
 
-def make_normalizer(english=True, chinese=False):
+def make_normalizer(english=False, chinese=False):
     if english:
         normalizer = EnglishTextNormalizer()
     elif chinese:
@@ -148,17 +148,18 @@ def load_data(
             token=True,
         )
 
-    english = check_if_english(dataset_path, dataset_config, split)
+    # english = check_if_english(dataset_path, dataset_config, split)
+    # print(dataset_path, dataset, 'english dataset: ', english)
 
-    print(dataset_path, dataset, 'english dataset: ', english)
-
-    return dataset, english
+    # return dataset, english
+    return dataset
 
 
 def prepare_data(
         dataset, dataset_path, audio_col_name='audio',
         english=True, chinese=False, sampling_rate=16_000
     ):
+    print(dataset, dataset_path, audio_col_name, english, chinese)
     # also convert to a uniform format and may need to process from multichannel to single
     # Re-sample to 16kHz and normalise transcriptions
     dataset = dataset.cast_column(audio_col_name, Audio(sampling_rate=sampling_rate))
@@ -181,10 +182,11 @@ def prepare_data(
 
 def load_and_prepare_dataset(args, warmup=False):
     args.audio_col_name = get_audio_col_name(args.dataset_path)
-    dataset, english = load_data(args.dataset_path, args.dataset, args.split, args.streaming)
+    # dataset, english = load_data(args.dataset_path, args.dataset, args.split, args.streaming)
+    dataset = load_data(args.dataset_path, args.dataset, args.split, args.streaming)
     dataset, normalizer = prepare_data(
         dataset, args.dataset_path, args.audio_col_name,
-        english, args.chinese, args.target_sampling_rate
+        args.norm_english, args.norm_chinese, args.target_sampling_rate
     )
 
     if warmup:

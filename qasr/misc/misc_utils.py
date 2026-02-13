@@ -56,6 +56,8 @@ def parse_args():
                         choices=['wer_all', 'wer', 'cer', 'bert', 'ter'])
 
     parser.add_argument('--force_asr_language', type=str, default=None)
+    parser.add_argument('--language', type=str, default=None,
+                        default='diff flag from force_asr_language for chinese dialects')
     parser.add_argument('--long_form', action='store_true',
                         help='no truncation and return_attention_mask for whisper > 30 s')
     parser.add_argument('--long_form_tricks', action='store_true',
@@ -86,10 +88,8 @@ def parse_args():
     parser.add_argument('--data_dtype', type=str, default='bfloat16',
                          choices=['bfloat16', 'float16', 'float32'])
     parser.add_argument('--target_sampling_rate', type=int, default=16_000)
-    parser.add_argument('--chinese', action='store_true',
-                        help='chinese normalizer')
-    parser.add_argument('--pinyin', action='store_true',
-                        help='convert chinese to pinyin, needed if evaluating tones')
+    parser.add_argument('--norm_english', action='store_true', help='english normalizer')
+    parser.add_argument('--norm_chinese', action='store_true', help='chinese normalizer')
     parser.add_argument('--traditional', action='store_true')
 
     parser.add_argument('--batch_size', type=int, default=64)

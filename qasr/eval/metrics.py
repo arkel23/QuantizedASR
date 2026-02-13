@@ -31,7 +31,7 @@ except:
 EMBEDDER = 'microsoft/deberta-large-mnli'
 
 
-def compute_metrics(results, eval_metric):
+def compute_metrics(results, eval_metric, language='zh'):
     scores_dic = {}
     
     # Normalize to list
@@ -49,7 +49,7 @@ def compute_metrics(results, eval_metric):
         elif metric_name == 'bert':
             metric = evaluate.load('bertscore')
         elif metric_name == 'ter':
-            metric = TonalASRMetrics()
+            metric = TonalASRMetrics(language)
 
         # Compute scores
         if metric_name in ['wer', 'cer', 'wer_all', 'ter']:

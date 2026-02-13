@@ -1,3 +1,4 @@
 dataset_path: 'TwinkStart/peoples_speech'
 dataset: 'default'
 split: 'test'
+english: true

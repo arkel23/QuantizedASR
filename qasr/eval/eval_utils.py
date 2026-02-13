@@ -319,6 +319,8 @@ def make_benchmark_fn(model, processor, normalizer, model_input_name, gen_kwargs
         batch['references'] = batch['norm_text']
         batch['transcription_time_s'] = minibatch_size * [runtime / minibatch_size]
         batch['audio_length_s'] = audio_lengths_s
+        # print('orig: ', batch['original_text'])
+        # print('norm: ', batch['norm_text'])
         # print(preds, minibatch_size, runtime, audio_lengths_s, batch['audio_length_s'])
 
         return batch
@@ -378,7 +380,8 @@ def compute_and_log_metrics(results, model, args):
         transcription_time=results['transcription_time_s'],
     )
 
-    scores_dic = compute_metrics(results, args.eval_metrics)
+    scores_dic = compute_metrics(results, args.eval_metrics,
+                                 args.language if args.language else args.force_asr_language)
 
     rtfx = round(
         sum(results['audio_length_s']) / sum(results['transcription_time_s']), 2

@@ -57,13 +57,21 @@ for i in range(len(dataset_paths)):
         "dataset_path": QuotedStr(dataset_paths[i]),
         "dataset": QuotedStr(configs[i]),
         "split": QuotedStr(splits[i]),
-        "chinese": True,
+        "norm_chinese": True,
         "eval_metrics": ['cer', 'ter', 'bert'],
         "force_asr_language": QuotedStr("zh"),
     }
+
+    if 'hokkien' in filename:
+        yaml_data.update({"language": 'nan'})
+    elif 'hakka' in filename:
+        yaml_data.update({"language": 'hak'})
+    elif 'yue' in filename:
+        yaml_data.update({"language": 'yue'})
+    else:
+        yaml_data.update({"language": 'zh'})
 
     with open(filepath, 'w') as f:
         yaml.dump(yaml_data, f, default_flow_style=False, sort_keys=False)
     
     print(f"Created: {filename}")
-

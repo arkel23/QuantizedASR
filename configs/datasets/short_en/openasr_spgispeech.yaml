@@ -1,3 +1,4 @@
 dataset_path: 'hf-audio/esb-datasets-test-only-sorted'
 dataset: 'spgispeech'
 split: 'test'
+english: true

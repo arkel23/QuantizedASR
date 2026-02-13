@@ -52,8 +52,10 @@ class ChineseNormalizer:
         self.pinyin = pinyin
         self.style = getattr(Style, style, 'TONE3')
         self.neutral_tone_with_five = neutral_tone_with_five        
+        print('Initialized chinese normalizer.')
 
     def __call__(self, text):
+        print(text)
         text = self.normalizer(text)
 
         if self.pinyin:
@@ -63,7 +65,7 @@ class ChineseNormalizer:
                 neutral_tone_with_five=self.neutral_tone_with_five,
             )
             text = ' '.join(text)
-
+        print(text)
         return text
 
 if __name__ == '__main__':

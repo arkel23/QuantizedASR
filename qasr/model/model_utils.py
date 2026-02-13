@@ -23,11 +23,22 @@ except:
     print('HF transformers>5 can use AudioFlamingo3')
 
 
-def add_transcription_prompt_to_processor(processor, model_id, language='en'):
+def add_transcription_prompt_to_processor(processor, model_id, language='en', dialect=None):
     try:
         language_fn = Lang(language).name
     except:
         language_fn = language
+
+    language_code = language
+
+    if dialect is not None:
+        try:
+            language_fn = Lang(dialect).name
+        except:
+            language_fn = f'{language}-{dialect}'
+
+        language_code = f'{language}-{language_code}'
+
 
     if 'granite' in model_id:
         # create text prompt
@@ -51,7 +62,7 @@ def add_transcription_prompt_to_processor(processor, model_id, language='en'):
         # https://huggingface.co/Qwen/Qwen2-Audio-7B
         # https://github.com/QwenLM/Qwen2-Audio/blob/main/eval_audio/evaluate_asr.py
         # prompt = '<|audio_bos|><|AUDIO|><|audio_eos|>Generate the caption in English:'
-        prompt = f'<|audio_bos|><|AUDIO|><|audio_eos|>Detect the language and recognize the speech: <|{language}|>'
+        prompt = f'<|audio_bos|><|AUDIO|><|audio_eos|>Detect the language and recognize the speech: <|{language_code}|>'
         processor.prompt_asr = prompt
 
     elif 'Qwen2.5-Omni' in model_id:
@@ -93,7 +104,7 @@ def prepare_processor(args):
         processor = AutoProcessor.from_pretrained('openai/whisper-large-v3-turbo', trust_remote_code=True)
     else:
         processor = AutoProcessor.from_pretrained(args.model_id, trust_remote_code=True)
-    processor = add_transcription_prompt_to_processor(processor, args.model_id, args.force_asr_language)
+    processor = add_transcription_prompt_to_processor(processor, args.model_id, args.force_asr_language, args.language)
     return processor
 
 

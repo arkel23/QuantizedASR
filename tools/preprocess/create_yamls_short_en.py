@@ -66,6 +66,7 @@ for i in range(len(dataset_paths)):
         "dataset_path": QuotedStr(dataset_paths[i]),
         "dataset": QuotedStr(configs[i]),
         "split": QuotedStr(splits[i]),
+        "norm_english": True,
     }
 
     with open(filepath, 'w') as f:
