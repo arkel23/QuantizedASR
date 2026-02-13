@@ -57,7 +57,7 @@ def parse_args():
 
     parser.add_argument('--force_asr_language', type=str, default=None)
     parser.add_argument('--language', type=str, default=None,
-                        default='diff flag from force_asr_language for chinese dialects')
+                        help='diff flag from force_asr_language for chinese dialects')
     parser.add_argument('--long_form', action='store_true',
                         help='no truncation and return_attention_mask for whisper > 30 s')
     parser.add_argument('--long_form_tricks', action='store_true',
