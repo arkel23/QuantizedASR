@@ -23,7 +23,7 @@ def plot_tone_confusion_matrix(confusion_matrix, fp, save_to_wandb=False, dpi=16
                 # fmt='d',  # Integer format
                 fmt='.2%', # percent
                 # cmap='YlOrRd',
-                cmap='YlOrBr',
+                # cmap='YlOrBr',
                 cmap='coolwarm',
                 xticklabels=tone_labels,
                 yticklabels=tone_labels,
