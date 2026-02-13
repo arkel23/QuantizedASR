@@ -291,16 +291,22 @@ class TonalASRMetrics(evaluate.Metric):
 
         if self.language == 'zh':
             # ConER 聖母
-            # metrics['coner'] = self.wer_metric.compute(
-            #     references=results_pinyin['references_initials'],
-            #     predictions=results_pinyin['predictions_initials']
-            # )
+            try:
+                metrics['coner'] = self.wer_metric.compute(
+                    references=results_pinyin['references_initials'],
+                    predictions=results_pinyin['predictions_initials']
+                )
+            except:
+                metrics['coner'] = np.nan
 
             # VER 韻母
-            metrics['ver'] = self.wer_metric.compute(
-                references=results_pinyin['references_finals'],
-                predictions=results_pinyin['predictions_finals']
-            )
+            try:
+                metrics['ver'] = self.wer_metric.compute(
+                    references=results_pinyin['references_finals'],
+                    predictions=results_pinyin['predictions_finals']
+                )
+            except:
+                metrics['ver'] = np.nan
 
 
         if return_pinyin:
