@@ -41,7 +41,6 @@ MODEL_CONFIGS=(
     "lite_whisper_large_v3_turbo_fast.yaml"
 
     "voxtral_mini_3b.yaml"
-    "voxtral_small_24b.yaml"
     "granite_speech_2b.yaml"
     "granite_speech_8b.yaml"
     "qwen_25_omni_7b.yaml"
@@ -49,13 +48,15 @@ MODEL_CONFIGS=(
     "qwen_2_audio_7b_instruct.yaml"
 )
 
-base_cmd="python -m tools.evaluate --serial 100 --batch_size 4"
+#    "voxtral_small_24b.yaml"
+
+base_cmd="python -m tools.evaluate --serial 100 --batch_size 32"
 
 # Iterate through all combinations
 for model_cfg in "${MODEL_CONFIGS[@]}"; do
     for dataset_cfg in "${DATASET_CONFIGS[@]}"; do
         # Execute the command
-        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/short_zh/$dataset_cfg"
+        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/short_zh/$dataset_cfg --wandb_save_figs"
         echo "$cmd"
         $cmd
     done
