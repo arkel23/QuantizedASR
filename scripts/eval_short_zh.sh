@@ -41,16 +41,14 @@ MODEL_CONFIGS=(
     "lite_whisper_large_v3_turbo_fast.yaml"
 
     "voxtral_mini_3b.yaml"
-    "granite_speech_2b.yaml"
-    "granite_speech_8b.yaml"
+    "voxtral_small_24b.yaml"
     "qwen_25_omni_7b.yaml"
     "qwen_2_audio_7b.yaml"
     "qwen_2_audio_7b_instruct.yaml"
 )
 
-#    "voxtral_small_24b.yaml"
 
-base_cmd="python -m tools.evaluate --serial 100 --batch_size 32"
+base_cmd="python -m tools.evaluate --serial 100 --batch_size 128"
 
 # Iterate through all combinations
 for model_cfg in "${MODEL_CONFIGS[@]}"; do
