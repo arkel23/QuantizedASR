@@ -92,7 +92,10 @@ class Pinyinizer:
         # minnan -> nan-tw
         elif self.language == 'nan':
             # https://github.com/andreihar/taibun
-            text = self.converter.get(text)
+            try:
+                text = self.converter.get(text)
+            except:
+                text = NAVC
 
         # hakka -> hak
         elif self.language == 'hak':
