@@ -20,8 +20,10 @@ def plot_tone_confusion_matrix(confusion_matrix, fp, save_to_wandb=False, dpi=16
     # Use seaborn heatmap
     sns.heatmap(confusion_matrix, 
                 annot=True,  # Show numbers
-                fmt='d',  # Integer format
-                cmap='YlOrRd',
+                # fmt='d',  # Integer format
+                fmt='.2%', # percent
+                # cmap='YlOrRd',
+                cmap='YlOrBr',
                 xticklabels=tone_labels,
                 yticklabels=tone_labels,
                 cbar_kws={'label': 'Count'})
