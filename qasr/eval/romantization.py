@@ -95,6 +95,7 @@ class Pinyinizer:
             try:
                 text = self.converter.get(text)
             except:
+                print('Issue when romanizing text: ', text)
                 text = NAVC
 
         # hakka -> hak
