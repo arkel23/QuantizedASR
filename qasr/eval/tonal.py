@@ -110,6 +110,11 @@ def compute_ter_her(token_pairs_list: list,
     """
     if language == 'zh':
         ntones = 5
+    elif language == 'yue':
+        ntones = 6
+    elif language == 'nan':
+        ntones = 8
+
     else:
         raise NotImplementedError
     confusion_matrix = np.zeros((ntones, ntones), dtype=int)
@@ -277,7 +282,7 @@ class TonalASRMetrics(evaluate.Metric):
         )
 
         # TER and HER
-        ter_result = compute_ter_her(results_pinyin['pinyin_hanzi_ref_pred_pairs'])
+        ter_result = compute_ter_her(results_pinyin['pinyin_hanzi_ref_pred_pairs'], language=self.language)
         for k, v in ter_result.items():
             if k in ['ter', 'tep', 'ater', 'her', 'hep']:
                 metrics[k] = v

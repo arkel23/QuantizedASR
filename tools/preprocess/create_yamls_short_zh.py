@@ -71,6 +71,12 @@ for i in range(len(dataset_paths)):
     else:
         yaml_data.update({"language": 'zh'})
 
+    # if 'speech' in dataset_paths[i]:
+    #     yaml_data.update({
+    #         "long_form": True,
+    #         "long_form_tricks": True,
+    #     })
+
     with open(filepath, 'w') as f:
         yaml.dump(yaml_data, f, default_flow_style=False, sort_keys=False)
     

@@ -38,11 +38,11 @@ def prepare_filter_language(target_language='en'):
 
     return is_language
 
-
-# filter data that is shorter than min_input_length or longer than
-# max_input_length
-def is_audio_in_length_range(length, min_input_length, max_input_length):
-    return length > min_input_length and length < max_input_length
+def is_target_text_in_range(ref):
+    if ref.strip() == 'ignore time segment in scoring':
+        return False
+    else:
+        return ref.strip() != ''
 
 
 def has_no_repeats(text):
@@ -58,11 +58,18 @@ def has_no_repeats(text):
     return True
 
 
-def is_target_text_in_range(ref):
-    if ref.strip() == 'ignore time segment in scoring':
-        return False
-    else:
-        return ref.strip() != ''
+def contains_chinese(text):
+    # This regex searches for at least one character in the CJK range
+    # If no Chinese character is found, it returns False (filtering the sample out)
+    if re.search(r'[\u4e00-\u9fff]', str(text)):
+        return True
+    return False
+
+
+# filter data that is shorter than min_input_length or longer than
+# max_input_length
+def is_audio_in_length_range(length, min_input_length, max_input_length):
+    return length > min_input_length and length < max_input_length
 
 
 def get_audio_col_name(dataset_path):
@@ -193,8 +200,9 @@ def prepare_data(
     # checks for valid text
     dataset = dataset.filter(is_target_text_in_range, input_columns=['norm_text'])
     # check text does not contain 3 or more times a repeated word (indicates noisy data)
-    if 'speech' in dataset_path:
+    if chinese:
         dataset = dataset.filter(has_no_repeats, input_columns=['norm_text'])
+        dataset = dataset.filter(contains_chinese, input_columns=['norm_text'])
     # checks audio is within a range
     # dataset = dataset.filter(is_audio_in_length_range, input_columns=['input_length'])
 
