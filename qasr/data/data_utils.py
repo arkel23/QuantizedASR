@@ -1,3 +1,5 @@
+import re
+
 import torch
 from datasets import load_dataset, Audio
 from transformers import VoxtralProcessor, GraniteSpeechProcessor, \
@@ -41,6 +43,19 @@ def prepare_filter_language(target_language='en'):
 # max_input_length
 def is_audio_in_length_range(length, min_input_length, max_input_length):
     return length > min_input_length and length < max_input_length
+
+
+def has_no_repeats(text):
+    # This regex matches any character (including Chinese) that repeats 3+ times.
+    # (.) matches any character.
+    # \1 matches the exact same character as the first one.
+    # {2,} matches two or more additional occurrences (total 3+).
+    pattern = r'(.)\1{2,}'
+    
+    # If a match is found, the text is "bad", so we return False to filter it out.
+    if re.search(pattern, text):
+        return False
+    return True
 
 
 def is_target_text_in_range(ref):
@@ -175,7 +190,12 @@ def prepare_data(
     dataset = dataset.map(normalize)
 
     # filter
+    # checks for valid text
     dataset = dataset.filter(is_target_text_in_range, input_columns=['norm_text'])
+    # check text does not contain 3 or more times a repeated word (indicates noisy data)
+    if 'speech' in dataset_path:
+        dataset = dataset.filter(has_no_repeats, input_columns=['norm_text'])
+    # checks audio is within a range
     # dataset = dataset.filter(is_audio_in_length_range, input_columns=['input_length'])
 
     return dataset, normalizer

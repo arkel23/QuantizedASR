@@ -4,7 +4,6 @@ split: 'test'
 norm_chinese: true
 eval_metrics:
 - cer
-- ter
 - bert
 force_asr_language: 'zh'
-language: hak
+language: zh

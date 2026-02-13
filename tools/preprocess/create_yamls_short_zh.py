@@ -62,10 +62,10 @@ for i in range(len(dataset_paths)):
         "force_asr_language": QuotedStr("zh"),
     }
 
+    if 'hakka' in filename:
+        yaml_data.update({"language": 'hak', "eval_metrics": ['cer', 'bert']})
     if 'hokkien' in filename:
         yaml_data.update({"language": 'nan'})
-    elif 'hakka' in filename:
-        yaml_data.update({"language": 'hak'})
     elif 'yue' in filename:
         yaml_data.update({"language": 'yue'})
     else:
