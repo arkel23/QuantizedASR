@@ -2,6 +2,7 @@ import os
 import glob
 import json
 import time
+import pprint
 from collections import defaultdict
 from statistics import mean, stdev
 
@@ -14,6 +15,7 @@ from transformers import StoppingCriteria, StoppingCriteriaList
 
 from qasr.data.data_utils import preprocess_batch, postprocess_predictions
 from .metrics import compute_metrics
+from .plot import plot_tone_confusion_matrix
 
 
 class MultipleTokenBatchStoppingCriteria(StoppingCriteria):
@@ -382,6 +384,9 @@ def compute_and_log_metrics(results, model, args):
 
     scores_dic = compute_metrics(results, args.eval_metrics,
                                  args.language if args.language else args.force_asr_language)
+    if 'confusion_matrix' in scores_dic:
+        fp = os.path.join(args.results_dir, 'cf_tones.png')
+        plot_tone_confusion_matrix(scores_dic['confusion_matrix'], fp, args.wandb_save_figs)
 
     rtfx = round(
         sum(results['audio_length_s']) / sum(results['transcription_time_s']), 2
@@ -414,6 +419,15 @@ def compute_and_log_metrics(results, model, args):
 
     print('Results saved at path:', os.path.abspath(manifest_path))
     print('Metrics:', scores_dic)
+
+
+    # save args
+    fp = os.path.join(args.results_dir, 'args_summary.txt')
+    with open(fp, 'w') as f:
+        f.write(pprint.pformat(vars(args)))
+        f.write('\n')
+        f.write(pprint.pformat(scores_dic))
+
 
     wandb.log(scores_dic)
     wandb.finish()

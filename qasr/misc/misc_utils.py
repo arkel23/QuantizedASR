@@ -109,6 +109,7 @@ def parse_args():
 
     parser.add_argument('--wandb_project', type=str, default='OpenASR')
     parser.add_argument('--wandb_entity', type=str, default='nycu_pcs')
+    parser.add_argument('--wandb_save_figs', action='store_true')
 
     parser.add_argument('--layer_pattern', type=str, default=None,
                         help='string/regex pattern for matching layers for vis')
@@ -139,6 +140,7 @@ def parse_args():
         args.force_asr_language = 'en'
         print('If force_asr_language is None, Qwen2/2.5 and lite-whisper models default to English')
 
+    print(args)
     return args
 
 

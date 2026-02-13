@@ -71,6 +71,8 @@ for i in range(len(dataset_paths)):
     else:
         yaml_data.update({"language": 'zh'})
 
+    # tried this with whisper and it does not help with hsk datasets
+    # some of the genargs make it give an error for qwen
     # if 'speech' in dataset_paths[i]:
     #     yaml_data.update({
     #         "long_form": True,
