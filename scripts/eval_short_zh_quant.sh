@@ -105,7 +105,7 @@ for index in "${!QUANT_CONFIGS[@]}"; do
             # Execute the command
             cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/short_zh/$dataset_cfg configs/quant/${QUANT_CONFIGS[$index]} --wandb_save_figs --serial ${SERIALS[$index]}"
             echo "$cmd"
-            # $cmd
+            $cmd
         done
     done
 done
