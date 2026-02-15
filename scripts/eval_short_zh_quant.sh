@@ -95,17 +95,39 @@ SERIALS=(
     "120"
 )
 
+quant_config='bnb_w4.yaml'
+others=''
+
+VALID_ARGS=$(getopt  -o '' --long quant_config:,others: -- "$@")
+if [[ $? -ne 0 ]]; then
+    exit 1;
+fi
+
+eval set -- "$VALID_ARGS"
+while [ : ]; do
+  case "$1" in
+    --quant_config)
+        dquant_config=${2}
+        shift 2
+        ;;
+    --others)
+        others=${2}
+        shift 2
+        ;;
+    --) shift;
+        break
+        ;;
+  esac
+done
 
 base_cmd="python -m tools.evaluate --batch_size 128"
 
 # Iterate through all combinations
-for index in "${!QUANT_CONFIGS[@]}"; do
-    for model_cfg in "${MODEL_CONFIGS[@]}"; do
-        for dataset_cfg in "${DATASET_CONFIGS[@]}"; do
-            # Execute the command
-            cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/short_zh/$dataset_cfg configs/quant/${QUANT_CONFIGS[$index]} --wandb_save_figs --serial ${SERIALS[$index]}"
-            echo "$cmd"
-            $cmd
-        done
+for model_cfg in "${MODEL_CONFIGS[@]}"; do
+    for dataset_cfg in "${DATASET_CONFIGS[@]}"; do
+        # Execute the command
+        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/short_zh/$dataset_cfg configs/quant/${QUANT_CONFIGS[$index]} --wandb_save_figs --serial ${SERIALS[$index]}"
+        echo "$cmd"
+        $cmd
     done
 done

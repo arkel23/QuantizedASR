@@ -65,6 +65,9 @@ for i in range(len(dataset_paths)):
         "force_asr_language": QuotedStr(languages[i]),
     }
 
+    if languages[i] == 'en':
+        yaml_data.update({"norm_english": True})
+
     with open(filepath, 'w') as f:
         yaml.dump(yaml_data, f, default_flow_style=False, sort_keys=False)
     

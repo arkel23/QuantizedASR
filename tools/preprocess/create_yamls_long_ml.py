@@ -4,7 +4,7 @@ import yaml
 # --- 1. Define the Languages from the Plot ---
 # Extracted left-to-right from the provided image
 floras_codes = [
-    "en", "ru", "es", "de", "fr", "it", "id", "ja", "pt", "tr", 
+    "ru", "es", "de", "fr", "it", "id", "ja", "pt", "tr", 
     "pl", "zh", "nl", "hu", "eu", "hi", "vi", "fi", "uk", "el", 
     "ro", "ca", "cs", "th", "et", "ms", "eo", "fa", "ta", "sk", 
     "sl", "hr", "da", "sr", "la", "ar", "uz", "bg", "sv", "ur", 
