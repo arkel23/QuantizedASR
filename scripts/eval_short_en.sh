@@ -29,28 +29,30 @@ DATASET_CONFIGS=(
 )
 
 MODEL_CONFIGS=(
-    "whisper_tiny.yaml"
-    "whisper_small.yaml"
-    "whisper_base.yaml"
-    "whisper_medium.yaml"
-    "whisper_large.yaml"
-    "whisper_large_v2.yaml"
-    "whisper_large_v3.yaml"
-    "whisper_large_v3_turbo.yaml"
-
-    "lite_whisper_large_v3_acc.yaml"
-    "lite_whisper_large_v3.yaml"
-    "lite_whisper_large_v3_fast.yaml"
-    "lite_whisper_large_v3_turbo_acc.yaml"
-    "lite_whisper_large_v3_turbo.yaml"
-    "lite_whisper_large_v3_turbo_fast.yaml"
-
-    "voxtral_mini_3b.yaml"
     "voxtral_small_24b.yaml"
-    "qwen_25_omni_7b.yaml"
-    "qwen_2_audio_7b.yaml"
-    "qwen_2_audio_7b_instruct.yaml"
 )
+
+    # "whisper_tiny.yaml"
+    # "whisper_small.yaml"
+    # "whisper_base.yaml"
+    # "whisper_medium.yaml"
+    # "whisper_large.yaml"
+    # "whisper_large_v2.yaml"
+    # "whisper_large_v3.yaml"
+    # "whisper_large_v3_turbo.yaml"
+
+    # "lite_whisper_large_v3_acc.yaml"
+    # "lite_whisper_large_v3.yaml"
+    # "lite_whisper_large_v3_fast.yaml"
+    # "lite_whisper_large_v3_turbo_acc.yaml"
+    # "lite_whisper_large_v3_turbo.yaml"
+    # "lite_whisper_large_v3_turbo_fast.yaml"
+
+    # "voxtral_mini_3b.yaml"
+    # "voxtral_small_24b.yaml"
+    # "qwen_25_omni_7b.yaml"
+    # "qwen_2_audio_7b.yaml"
+    # "qwen_2_audio_7b_instruct.yaml"
 
 
 base_cmd="python -m tools.evaluate --serial 200 --batch_size 128"

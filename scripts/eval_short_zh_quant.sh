@@ -107,7 +107,7 @@ eval set -- "$VALID_ARGS"
 while [ : ]; do
   case "$1" in
     --quant_config)
-        dquant_config=${2}
+        quant_config=${2}
         shift 2
         ;;
     --others)
@@ -126,7 +126,7 @@ base_cmd="python -m tools.evaluate --batch_size 128"
 for model_cfg in "${MODEL_CONFIGS[@]}"; do
     for dataset_cfg in "${DATASET_CONFIGS[@]}"; do
         # Execute the command
-        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/short_zh/$dataset_cfg configs/quant/${QUANT_CONFIGS[$index]} --wandb_save_figs --serial ${SERIALS[$index]}"
+        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/short_zh/$dataset_cfg configs/quant/$quant_config --wandb_save_figs $others"
         echo "$cmd"
         $cmd
     done

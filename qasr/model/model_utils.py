@@ -192,7 +192,7 @@ def load_model_and_processor(args):
             gen_kwargs['task'] = 'transcribe'
             gen_kwargs['generation_config'] = GenerationConfig.from_pretrained(args.model_id)
 
-        if args.long_form:
+        if args.long_form and 'whisper' in args.model_id:
             gen_kwargs['return_timestamps'] = True
 
             if args.long_form_tricks:

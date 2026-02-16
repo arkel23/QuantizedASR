@@ -1,8 +1,9 @@
 #!/bin/bash
 
 DATASET_CONFIGS=(
-    "openasr_longform_earnings21.yaml"
+    "openasr_longform_earnings22.yaml"
 )
+    # "openasr_longform_earnings21.yaml"
     # "openasr_longform_earnings22.yaml"
     # "openasr_longform_tedlium.yaml"
     # "distil_meanwhile.yaml"
@@ -49,7 +50,7 @@ base_cmd="python -m tools.evaluate --serial 400 --batch_size 128"
 for model_cfg in "${MODEL_CONFIGS[@]}"; do
     for dataset_cfg in "${DATASET_CONFIGS[@]}"; do
         # Execute the command
-        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/long_en/$dataset_cfg --wandb_save_figs"
+        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/long_en/$dataset_cfg --wandb_save_figs --max_new_tokens 8192"
         echo "$cmd"
         $cmd
     done
