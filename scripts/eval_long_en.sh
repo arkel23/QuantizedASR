@@ -38,7 +38,7 @@ MODEL_CONFIGS=(
     # "qwen_2_audio_7b.yaml"
     # "qwen_2_audio_7b_instruct.yaml"
 
-batch_size='8'
+batch_size='4'
 others=''
 
 VALID_ARGS=$(getopt  -o '' --long batch_size:,others: -- "$@")
@@ -102,7 +102,7 @@ MODEL_CONFIGS=(
 for model_cfg in "${MODEL_CONFIGS[@]}"; do
     for dataset_cfg in "${DATASET_CONFIGS[@]}"; do
         # Execute the command
-        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/long_en/$dataset_cfg --wandb_save_figs --max_new_tokens 8192"
+        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/long_en/$dataset_cfg --wandb_save_figs"
         echo "$cmd"
         $cmd
     done
