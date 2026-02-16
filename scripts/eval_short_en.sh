@@ -25,11 +25,33 @@ DATASET_CONFIGS=(
     "uea_speech_chatbot_alpaca_eval.yaml"
     "uea_speech_web_questions.yaml"
     "uea_speech_trivia_qa.yaml"
-    "uea_air_chat.yaml"
 )
 
+# error
+#     "uea_air_chat.yaml"
+
+
 MODEL_CONFIGS=(
-    "voxtral_small_24b.yaml"
+    "whisper_tiny.yaml"
+    "whisper_small.yaml"
+    "whisper_base.yaml"
+    "whisper_medium.yaml"
+    "whisper_large.yaml"
+    "whisper_large_v2.yaml"
+    "whisper_large_v3.yaml"
+    "whisper_large_v3_turbo.yaml"
+
+    "lite_whisper_large_v3_acc.yaml"
+    "lite_whisper_large_v3.yaml"
+    "lite_whisper_large_v3_fast.yaml"
+    "lite_whisper_large_v3_turbo_acc.yaml"
+    "lite_whisper_large_v3_turbo.yaml"
+    "lite_whisper_large_v3_turbo_fast.yaml"
+
+    "voxtral_mini_3b.yaml"
+    "qwen_25_omni_7b.yaml"
+    "qwen_2_audio_7b.yaml"
+    "qwen_2_audio_7b_instruct.yaml"
 )
 
     # "whisper_tiny.yaml"

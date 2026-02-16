@@ -1,7 +1,8 @@
 #!/bin/bash
 
 DATASET_CONFIGS=(
-    "openasr_longform_earnings22.yaml"
+    # "openasr_longform_earnings22.yaml"
+    # "distil_rev16_whisper.yaml"
 )
     # "openasr_longform_earnings21.yaml"
     # "openasr_longform_earnings22.yaml"
@@ -38,7 +39,7 @@ MODEL_CONFIGS=(
     # "qwen_2_audio_7b.yaml"
     # "qwen_2_audio_7b_instruct.yaml"
 
-batch_size='4'
+batch_size='2'
 others=''
 
 VALID_ARGS=$(getopt  -o '' --long batch_size:,others: -- "$@")
