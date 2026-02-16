@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DATASET_CONFIGS=(
-    "openasr_longform_tedlium.yaml"
+    "openasr_longform_earnings22.yaml"
 )
     # "openasr_longform_earnings21.yaml"
     # "openasr_longform_earnings22.yaml"
@@ -15,7 +15,7 @@ DATASET_CONFIGS=(
 MODEL_CONFIGS=(
     "voxtral_small_24b.yaml"
     "qwen_25_omni_7b.yaml"
-    "qwen_2_audio_7b.yaml"
+    "whisper_large_v3.yaml"
 )
 
     # "whisper_tiny.yaml"
@@ -42,7 +42,7 @@ MODEL_CONFIGS=(
 
 
 
-base_cmd="python -m tools.evaluate --serial 400 --batch_size 4"
+base_cmd="python -m tools.evaluate --serial 400 --batch_size 16"
 
 # Iterate through all combinations
 for model_cfg in "${MODEL_CONFIGS[@]}"; do
