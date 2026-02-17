@@ -22,7 +22,7 @@ DATASET_CONFIGS=(
     # "taiwan_tongues_hokkien.yaml"
 
 
-    # does not work in hpc / no standardized tones romanization for hakka
+# does not work in hpc / no standardized tones romanization for hakka
     # "uea_kespeech.yaml"
     # "taiwan_tongues_hakka.yaml"
 
@@ -57,10 +57,6 @@ MODEL_CONFIGS=(
 # QUANT_CONFIGS=(
     # "bnb_w4.yaml"
     # "bnb_w8.yaml"
-# )
-
-    # "bnb_w4.yaml"
-    # "bnb_w8.yaml"
     # "quanto_wint8.yaml"
     # "hqq_wint1.yaml"
     # "hqq_wint2.yaml"
@@ -79,6 +75,7 @@ MODEL_CONFIGS=(
     # "torchao_wfloat8_afloat8.yaml"
     # "torchao_wint4_aint8.yaml"
     # "torchao_wint8_aint8.yaml"
+# )
 
 
 # SERIALS=(

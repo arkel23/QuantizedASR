@@ -1,38 +1,34 @@
 #!/bin/bash
 
 DATASET_CONFIGS=(
+    "openasr_longform_earnings21.yaml"
+    "openasr_longform_earnings22.yaml"
+    "openasr_longform_tedlium.yaml"
+    "distil_meanwhile.yaml"
     "distil_rev16_whisper.yaml"
+    "distil_tedlium_longform.yaml"
+    "floras_dev.yaml"
+    "floras_test.yaml"
 )
-    # "openasr_longform_earnings21.yaml"
-    # "openasr_longform_earnings22.yaml"
-    # "openasr_longform_tedlium.yaml"
-    # "distil_meanwhile.yaml"
-    # "distil_rev16_whisper.yaml"
-    # "distil_tedlium_longform.yaml"
-    # "floras_dev.yaml"
-    # "floras_test.yaml"
 
 
 MODEL_CONFIGS=(
-    "lite_whisper_large_v3_acc.yaml"
+    "whisper_tiny.yaml"
+    "whisper_small.yaml"
+    "whisper_base.yaml"
+    "whisper_medium.yaml"
+    "whisper_large.yaml"
+    "whisper_large_v2.yaml"
     "whisper_large_v3.yaml"
+    "whisper_large_v3_turbo.yaml"
+
+    "lite_whisper_large_v3_acc.yaml"
+    "lite_whisper_large_v3.yaml"
+    "lite_whisper_large_v3_fast.yaml"
+    "lite_whisper_large_v3_turbo_acc.yaml"
+    "lite_whisper_large_v3_turbo.yaml"
+    "lite_whisper_large_v3_turbo_fast.yaml"
 )
-
-#     "whisper_tiny.yaml"
-#     "whisper_small.yaml"
-#     "whisper_base.yaml"
-#     "whisper_medium.yaml"
-#     "whisper_large.yaml"
-#     "whisper_large_v2.yaml"
-#     "whisper_large_v3.yaml"
-#     "whisper_large_v3_turbo.yaml"
-
-#     "lite_whisper_large_v3_acc.yaml"
-#     "lite_whisper_large_v3.yaml"
-#     "lite_whisper_large_v3_fast.yaml"
-#     "lite_whisper_large_v3_turbo_acc.yaml"
-#     "lite_whisper_large_v3_turbo.yaml"
-#     "lite_whisper_large_v3_turbo_fast.yaml"
 
 
 # voxtral only works with datasets whose max length
