@@ -15,9 +15,12 @@ DATASET_CONFIGS=(
     "mcv19_zhtw_validated.yaml"
     "mcv19_zhtw_test.yaml"
     "taiwan_tongues_zhtw.yaml"
-    "taiwan_tongues_hokkien.yaml"
     "uea_cv15_yue.yaml"
 )
+
+# no current model works well for hokkien without ft
+    # "taiwan_tongues_hokkien.yaml"
+
 
     # does not work in hpc / no standardized tones romanization for hakka
     # "uea_kespeech.yaml"
@@ -44,13 +47,22 @@ MODEL_CONFIGS=(
     "voxtral_small_24b.yaml"
     "qwen_25_omni_7b.yaml"
     "qwen_2_audio_7b.yaml"
-    "qwen_2_audio_7b_instruct.yaml"
 )
 
-QUANT_CONFIGS=(
-    "hqq_wint1.yaml"
-)
+# qwen2 instruct does does not perform well in any benchmark
+# probably prompt issue
+    # "qwen_2_audio_7b_instruct.yaml"
 
+
+# QUANT_CONFIGS=(
+    # "bnb_w4.yaml"
+    # "bnb_w8.yaml"
+# )
+
+    # "bnb_w4.yaml"
+    # "bnb_w8.yaml"
+    # "quanto_wint8.yaml"
+    # "hqq_wint1.yaml"
     # "hqq_wint2.yaml"
     # "hqq_wint3.yaml"
     # "hqq_wint4.yaml"
@@ -64,39 +76,36 @@ QUANT_CONFIGS=(
     # "torchao_wint7.yaml"
     # "torchao_wint8.yaml"
     # "torchao_wfloat8.yaml"
-    # "bnb_w4.yaml"
-    # "bnb_w8.yaml"
-    # "quanto_wint8.yaml"
     # "torchao_wfloat8_afloat8.yaml"
     # "torchao_wint4_aint8.yaml"
     # "torchao_wint8_aint8.yaml"
 
 
-SERIALS=(
-    "101"
-    "102"
-    "103"
-    "104"
-    "105"
-    "106"
-    "107"
-    "108"
-    "109"
-    "110"
-    "111"
-    "112"
-    "113"
-    "114"
-    "115"
-    "116"
-    "117"
-    "118"
-    "119"
-    "120"
-)
+# SERIALS=(
+#     "101"
+#     "102"
+#     "103"
+#     "104"
+#     "105"
+#     "106"
+#     "107"
+#     "108"
+#     "109"
+#     "110"
+#     "111"
+#     "112"
+#     "113"
+#     "114"
+#     "115"
+#     "116"
+#     "117"
+#     "118"
+#     "119"
+#     "120"
+# )
 
 quant_config='bnb_w4.yaml'
-others=''
+others=' --serial 101'
 
 VALID_ARGS=$(getopt  -o '' --long quant_config:,others: -- "$@")
 if [[ $? -ne 0 ]]; then
@@ -126,7 +135,7 @@ base_cmd="python -m tools.evaluate --batch_size 128"
 for model_cfg in "${MODEL_CONFIGS[@]}"; do
     for dataset_cfg in "${DATASET_CONFIGS[@]}"; do
         # Execute the command
-        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/short_zh/$dataset_cfg configs/quant/$quant_config --wandb_save_figs $others"
+        cmd="$base_cmd --config configs/models/$model_cfg configs/datasets/short_zh/$dataset_cfg configs/quant/$quant_config --wandb_save_figs$others"
         echo "$cmd"
         $cmd
     done
