@@ -8,9 +8,10 @@ DATASET_CONFIGS=(
     "distil_rev16_whisper.yaml"
     "distil_tedlium_longform.yaml"
     "floras_dev.yaml"
-    "floras_test.yaml"
 )
 
+# floras_test consistently fails due to oom
+#     "floras_test.yaml"
 
 MODEL_CONFIGS=(
     "whisper_tiny.yaml"
